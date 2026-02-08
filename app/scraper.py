@@ -69,7 +69,7 @@ async def get_user_tweets(username: str, count: int = 20):
             "reply_count": tweet.reply_count,
             "view_count": tweet.view_count,
         })
-    return results
+    return {"username": username, "count": len(results), "tweets": results}
 
 
 async def search_tweets(query: str, count: int = 20):
@@ -90,7 +90,7 @@ async def search_tweets(query: str, count: int = 20):
             "reply_count": tweet.reply_count,
             "view_count": tweet.view_count,
         })
-    return results
+    return {"query": query, "count": len(results), "tweets": results}
 
 
 async def get_trends():
@@ -102,4 +102,4 @@ async def get_trends():
             "name": trend.name,
             "tweet_count": trend.tweets_count,
         })
-    return results
+    return {"count": len(results), "trends": results}
