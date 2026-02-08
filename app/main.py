@@ -34,6 +34,17 @@ app = FastAPI(
 )
 
 
+@app.get("/health")
+async def health():
+    """Health check - shows if env vars are loaded (no auth needed)."""
+    return {
+        "status": "ok",
+        "api_key_set": API_KEY != "change-me",
+        "api_key_length": len(API_KEY),
+        "api_key_preview": API_KEY[:3] + "***" if len(API_KEY) > 3 else "***",
+    }
+
+
 class CookiesInput(BaseModel):
     auth_token: str
     ct0: str
