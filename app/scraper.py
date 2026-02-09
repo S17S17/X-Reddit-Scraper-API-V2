@@ -1,22 +1,89 @@
 import json
 import os
+import time
 
 from twikit import Client
+from twikit.errors import (
+    TwitterException,
+    BadRequest,
+    Unauthorized,
+    Forbidden,
+    NotFound,
+    RequestTimeout,
+    TooManyRequests,
+    ServerError,
+    UserNotFound,
+    UserUnavailable,
+    AccountSuspended,
+    AccountLocked,
+    TweetNotAvailable,
+)
 from app.config import TWITTER_USERNAME, TWITTER_EMAIL, TWITTER_PASSWORD, COOKIES_FILE
 
 
 client = Client("en-US")
 
 
+class ScraperError(Exception):
+    """Wrapper for scraper errors with HTTP status code mapping."""
+    def __init__(self, message: str, status_code: int = 500):
+        super().__init__(message)
+        self.status_code = status_code
+
+
+def handle_twitter_error(e: Exception) -> ScraperError:
+    """Map twikit exceptions to ScraperError with appropriate status codes."""
+    if isinstance(e, (Unauthorized, AccountLocked)):
+        return ScraperError(
+            "Cookies expired or invalid. Call POST /auth/set-cookies to re-authenticate.",
+            status_code=401,
+        )
+    if isinstance(e, (Forbidden, AccountSuspended)):
+        return ScraperError(
+            "Access forbidden. Account may be suspended or cookies expired. "
+            "Call POST /auth/set-cookies to re-authenticate.",
+            status_code=403,
+        )
+    if isinstance(e, (NotFound, UserNotFound, TweetNotAvailable)):
+        return ScraperError("Resource not found on Twitter.", status_code=404)
+    if isinstance(e, UserUnavailable):
+        return ScraperError("User is unavailable on Twitter.", status_code=404)
+    if isinstance(e, TooManyRequests):
+        reset_time = getattr(e, 'rate_limit_reset', None)
+        if reset_time:
+            wait_seconds = max(0, int(reset_time - time.time()))
+            minutes = max(1, wait_seconds // 60)
+            return ScraperError(
+                f"Rate limited by Twitter. Try again in ~{minutes} minute(s).",
+                status_code=429,
+            )
+        return ScraperError(
+            "Rate limited by Twitter. Try again in a few minutes.",
+            status_code=429,
+        )
+    if isinstance(e, BadRequest):
+        return ScraperError(f"Bad request to Twitter: {e}", status_code=400)
+    if isinstance(e, RequestTimeout):
+        return ScraperError("Twitter request timed out. Try again.", status_code=504)
+    if isinstance(e, ServerError):
+        return ScraperError("Twitter server error. Try again later.", status_code=502)
+    if isinstance(e, TwitterException):
+        return ScraperError(f"Twitter API error: {e}", status_code=500)
+    return ScraperError(f"Unexpected error: {type(e).__name__}: {e}", status_code=500)
+
+
 async def login():
     """Login to Twitter and save session cookies."""
-    await client.login(
-        auth_info_1=TWITTER_USERNAME,
-        auth_info_2=TWITTER_EMAIL,
-        password=TWITTER_PASSWORD,
-    )
-    client.save_cookies(COOKIES_FILE)
-    return {"status": "ok", "message": "Logged in and session saved."}
+    try:
+        await client.login(
+            auth_info_1=TWITTER_USERNAME,
+            auth_info_2=TWITTER_EMAIL,
+            password=TWITTER_PASSWORD,
+        )
+        client.save_cookies(COOKIES_FILE)
+        return {"status": "ok", "message": "Logged in and session saved."}
+    except Exception as e:
+        raise handle_twitter_error(e)
 
 
 def set_cookies(auth_token: str, ct0: str):
@@ -37,44 +104,87 @@ async def load_session():
     return False
 
 
+async def check_auth():
+    """Check if current cookies are valid by fetching the authenticated user."""
+    try:
+        user = await client.user()
+        return {
+            "status": "ok",
+            "authenticated": True,
+            "user": {
+                "id": user.id,
+                "name": user.name,
+                "username": user.screen_name,
+            },
+        }
+    except Exception as e:
+        raise handle_twitter_error(e)
+
+
 async def get_user(username: str):
     """Get a user's profile info."""
-    user = await client.get_user_by_screen_name(username)
-    return {
-        "id": user.id,
-        "name": user.name,
-        "username": user.screen_name,
-        "description": user.description,
-        "followers_count": user.followers_count,
-        "following_count": user.following_count,
-        "tweet_count": user.statuses_count,
-        "verified": user.is_blue_verified,
-        "profile_image_url": user.profile_image_url,
-        "created_at": user.created_at,
-    }
+    try:
+        user = await client.get_user_by_screen_name(username)
+        return {
+            "id": user.id,
+            "name": user.name,
+            "username": user.screen_name,
+            "description": user.description,
+            "followers_count": user.followers_count,
+            "following_count": user.following_count,
+            "tweet_count": user.statuses_count,
+            "verified": user.is_blue_verified,
+            "profile_image_url": user.profile_image_url,
+            "created_at": user.created_at,
+        }
+    except Exception as e:
+        raise handle_twitter_error(e)
 
 
 async def get_user_tweets(username: str, count: int = 20):
     """Get recent tweets from a user."""
-    user = await client.get_user_by_screen_name(username)
-    tweets = await client.get_user_tweets(user.id, "Tweets", count=count)
-    results = []
-    for tweet in tweets:
-        results.append({
-            "id": tweet.id,
-            "text": tweet.text,
-            "created_at": tweet.created_at,
-            "favorite_count": tweet.favorite_count,
-            "retweet_count": tweet.retweet_count,
-            "reply_count": tweet.reply_count,
-            "view_count": tweet.view_count,
-        })
-    return {"username": username, "count": len(results), "tweets": results}
+    try:
+        user = await client.get_user_by_screen_name(username)
+        tweets = await client.get_user_tweets(user.id, "Tweets", count=count)
+        results = []
+        for tweet in tweets:
+            results.append({
+                "id": tweet.id,
+                "text": tweet.text,
+                "created_at": tweet.created_at,
+                "favorite_count": tweet.favorite_count,
+                "retweet_count": tweet.retweet_count,
+                "reply_count": tweet.reply_count,
+                "view_count": tweet.view_count,
+            })
+        return {"username": username, "count": len(results), "tweets": results}
+    except Exception as e:
+        raise handle_twitter_error(e)
 
 
-async def search_tweets(query: str, count: int = 20):
-    """Search tweets by keyword or hashtag."""
-    tweets = await client.search_tweet(query, "Latest", count=count)
+SEARCH_PRODUCTS = ("Top", "Latest", "Media", "Photos", "Videos")
+
+
+async def search_tweets(query: str, count: int = 20, product: str = "Latest"):
+    """Search tweets by keyword or hashtag with fallback logic."""
+    if product not in SEARCH_PRODUCTS:
+        raise ScraperError(
+            f"Invalid product '{product}'. Must be one of: {', '.join(SEARCH_PRODUCTS)}",
+            status_code=400,
+        )
+
+    try:
+        tweets = await client.search_tweet(query, product, count=count)
+    except NotFound:
+        # Fallback: if requested product returns 404, try the other option
+        fallback = "Top" if product == "Latest" else "Latest"
+        try:
+            tweets = await client.search_tweet(query, fallback, count=count)
+        except Exception as e:
+            raise handle_twitter_error(e)
+    except Exception as e:
+        raise handle_twitter_error(e)
+
     results = []
     for tweet in tweets:
         results.append({
@@ -93,13 +203,182 @@ async def search_tweets(query: str, count: int = 20):
     return {"query": query, "count": len(results), "tweets": results}
 
 
-async def get_trends():
-    """Get current trending topics."""
-    trends = await client.get_trends("trending", retry=False)
-    results = []
-    for trend in trends:
-        results.append({
-            "name": trend.name,
-            "tweet_count": trend.tweets_count,
-        })
-    return {"count": len(results), "trends": results}
+async def get_trends(category: str = "trending"):
+    """Get current trending topics by category."""
+    try:
+        trends = await client.get_trends(category, retry=False)
+        results = []
+        for trend in trends:
+            results.append({
+                "name": trend.name,
+                "tweet_count": trend.tweets_count,
+            })
+        return {"category": category, "count": len(results), "trends": results}
+    except Exception as e:
+        raise handle_twitter_error(e)
+
+
+def _serialize_tweet_full(tweet):
+    """Serialize a tweet object with all available fields."""
+    data = {
+        "id": tweet.id,
+        "text": tweet.text,
+        "created_at": tweet.created_at,
+        "user": {
+            "name": tweet.user.name,
+            "username": tweet.user.screen_name,
+            "profile_image_url": tweet.user.profile_image_url,
+        },
+        "favorite_count": tweet.favorite_count,
+        "retweet_count": tweet.retweet_count,
+        "reply_count": tweet.reply_count,
+        "view_count": tweet.view_count,
+        "quote_count": tweet.quote_count,
+        "bookmark_count": tweet.bookmark_count,
+        "lang": tweet.lang,
+        "hashtags": tweet.hashtags,
+        "is_quote_status": tweet.is_quote_status,
+        "in_reply_to": tweet.in_reply_to,
+        "media": [
+            {
+                "type": getattr(m, "type", None) or (m.get("type") if isinstance(m, dict) else None),
+                "url": getattr(m, "media_url_https", None) or (m.get("media_url_https") if isinstance(m, dict) else None),
+                "expanded_url": getattr(m, "expanded_url", None) or (m.get("expanded_url") if isinstance(m, dict) else None),
+            }
+            for m in (tweet.media or [])
+        ],
+    }
+    return data
+
+
+def _serialize_user(user):
+    """Serialize a user object with profile fields."""
+    return {
+        "id": user.id,
+        "name": user.name,
+        "username": user.screen_name,
+        "description": user.description,
+        "followers_count": user.followers_count,
+        "following_count": user.following_count,
+        "tweet_count": user.statuses_count,
+        "verified": user.is_blue_verified,
+        "profile_image_url": user.profile_image_url,
+    }
+
+
+async def get_tweet_by_id(tweet_id: str):
+    """Get a single tweet by its ID."""
+    try:
+        tweet = await client.get_tweet_by_id(tweet_id)
+        return _serialize_tweet_full(tweet)
+    except Exception as e:
+        raise handle_twitter_error(e)
+
+
+async def get_tweet_replies(tweet_id: str, count: int = 20):
+    """Get replies to a specific tweet."""
+    try:
+        tweet = await client.get_tweet_by_id(tweet_id)
+        replies = tweet.replies
+        results = []
+        for reply in (replies or [])[:count]:
+            results.append(_serialize_tweet_full(reply))
+        return {"tweet_id": tweet_id, "count": len(results), "replies": results}
+    except Exception as e:
+        raise handle_twitter_error(e)
+
+
+async def search_users(query: str, count: int = 20):
+    """Search users by query string."""
+    try:
+        users = await client.search_user(query, count=count)
+        results = []
+        for user in users:
+            results.append(_serialize_user(user))
+        return {"query": query, "count": len(results), "users": results}
+    except Exception as e:
+        raise handle_twitter_error(e)
+
+
+async def get_user_followers(username: str, count: int = 20):
+    """Get a user's followers."""
+    try:
+        user = await client.get_user_by_screen_name(username)
+        followers = await client.get_user_followers(user.id, count=count)
+        results = []
+        for u in followers:
+            results.append(_serialize_user(u))
+        return {"username": username, "count": len(results), "users": results}
+    except Exception as e:
+        raise handle_twitter_error(e)
+
+
+async def get_user_following(username: str, count: int = 20):
+    """Get users that a user is following."""
+    try:
+        user = await client.get_user_by_screen_name(username)
+        following = await client.get_user_following(user.id, count=count)
+        results = []
+        for u in following:
+            results.append(_serialize_user(u))
+        return {"username": username, "count": len(results), "users": results}
+    except Exception as e:
+        raise handle_twitter_error(e)
+
+
+async def get_user_media(username: str, count: int = 20):
+    """Get a user's media tweets."""
+    try:
+        user = await client.get_user_by_screen_name(username)
+        tweets = await client.get_user_tweets(user.id, "Media", count=count)
+        results = []
+        for tweet in tweets:
+            results.append(_serialize_tweet_full(tweet))
+        return {"username": username, "count": len(results), "tweets": results}
+    except Exception as e:
+        raise handle_twitter_error(e)
+
+
+async def get_user_likes(username: str, count: int = 20):
+    """Get tweets liked by a user."""
+    try:
+        user = await client.get_user_by_screen_name(username)
+        tweets = await client.get_user_tweets(user.id, "Likes", count=count)
+        results = []
+        for tweet in tweets:
+            results.append(_serialize_tweet_full(tweet))
+        return {"username": username, "count": len(results), "tweets": results}
+    except Exception as e:
+        raise handle_twitter_error(e)
+
+
+async def get_user_lists(username: str):
+    """Get a user's Twitter lists."""
+    try:
+        user = await client.get_user_by_screen_name(username)
+        lists = await client.get_lists(user.id)
+        results = []
+        for lst in lists:
+            results.append({
+                "id": lst.id,
+                "name": lst.name,
+                "description": lst.description,
+                "member_count": lst.member_count,
+                "subscriber_count": lst.subscriber_count,
+                "mode": lst.mode,
+            })
+        return {"username": username, "count": len(results), "lists": results}
+    except Exception as e:
+        raise handle_twitter_error(e)
+
+
+async def get_list_tweets(list_id: str, count: int = 20):
+    """Get tweets from a specific Twitter list."""
+    try:
+        tweets = await client.get_list_tweets(list_id, count=count)
+        results = []
+        for tweet in tweets:
+            results.append(_serialize_tweet_full(tweet))
+        return {"list_id": list_id, "count": len(results), "tweets": results}
+    except Exception as e:
+        raise handle_twitter_error(e)

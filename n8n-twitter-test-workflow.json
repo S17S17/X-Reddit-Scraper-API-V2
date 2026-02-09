@@ -12,7 +12,7 @@
     {
       "parameters": {
         "method": "GET",
-        "url": "http://localhost:8000/user/elonmusk",
+        "url": "https://web-production-91ed.up.railway.app/user/elonmusk",
         "sendHeaders": true,
         "headerParameters": {
           "parameters": [
@@ -33,7 +33,7 @@
     {
       "parameters": {
         "method": "GET",
-        "url": "http://localhost:8000/user/elonmusk/tweets",
+        "url": "https://web-production-91ed.up.railway.app/user/elonmusk/tweets",
         "sendHeaders": true,
         "headerParameters": {
           "parameters": [
@@ -63,7 +63,7 @@
     {
       "parameters": {
         "method": "GET",
-        "url": "http://localhost:8000/search/tweets",
+        "url": "https://web-production-91ed.up.railway.app/search/tweets",
         "sendHeaders": true,
         "headerParameters": {
           "parameters": [
