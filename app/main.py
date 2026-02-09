@@ -6,8 +6,9 @@ from fastapi.security import APIKeyHeader
 from pydantic import BaseModel
 
 from app.config import API_KEY
-from app import scraper
+from app import scraper, reddit
 from app.scraper import ScraperError
+from app.reddit import RedditError
 
 api_key_header = APIKeyHeader(name="X-API-Key")
 
@@ -29,21 +30,29 @@ async def lifespan(app: FastAPI):
 
 
 app = FastAPI(
-    title="Twitter/X Scraper API",
+    title="Twitter/X & Reddit Scraper API",
     description=(
-        "Free, self-hosted Twitter/X scraper API powered by twikit. "
+        "Free, self-hosted Twitter/X + Reddit scraper API. "
         "Replaces paid services like Apify ($29/mo). "
-        "Endpoints: user profiles, tweets, followers, following, likes, media, "
-        "lists, tweet search, user search, trends, tweet details, and replies. "
-        "Built for n8n workflow automation."
+        "21 endpoints: Twitter (user profiles, tweets, followers, following, likes, media, "
+        "lists, search, trends, replies) + Reddit (subreddits, search, comments). "
+        "Built for n8n workflow automation and the TTE Intelligence Pipeline."
     ),
-    version="2.0.0",
+    version="3.0.0",
     lifespan=lifespan,
 )
 
 
 @app.exception_handler(ScraperError)
 async def scraper_error_handler(request: Request, exc: ScraperError):
+    return JSONResponse(
+        status_code=exc.status_code,
+        content={"detail": str(exc)},
+    )
+
+
+@app.exception_handler(RedditError)
+async def reddit_error_handler(request: Request, exc: RedditError):
     return JSONResponse(
         status_code=exc.status_code,
         content={"detail": str(exc)},
@@ -61,14 +70,15 @@ class CookiesInput(BaseModel):
 @app.get("/health")
 async def health():
     """Basic health check. No auth required."""
-    return {"status": "ok", "version": "2.0.0", "endpoints": 16}
+    return {"status": "ok", "version": "3.0.0", "endpoints": 21}
 
 
 @app.get("/endpoints")
 async def list_endpoints():
     """List all available API endpoints. No auth required. Useful for n8n agent discovery."""
     return {
-        "version": "2.0.0",
+        "version": "3.0.0",
+        "total_endpoints": 21,
         "auth": [
             {"method": "POST", "path": "/auth/login", "description": "Login with credentials"},
             {"method": "POST", "path": "/auth/set-cookies", "description": "Set browser cookies (Cloudflare bypass)"},
@@ -96,6 +106,11 @@ async def list_endpoints():
         ],
         "lists": [
             {"method": "GET", "path": "/list/{list_id}/tweets", "description": "Get tweets from a list", "params": "count"},
+        ],
+        "reddit": [
+            {"method": "GET", "path": "/reddit/subreddit/{name}", "description": "Get subreddit posts", "params": "sort (hot/new/top/rising), time_filter, count"},
+            {"method": "GET", "path": "/reddit/search", "description": "Search Reddit posts", "params": "query, sort, time_filter, count"},
+            {"method": "GET", "path": "/reddit/post/{post_id}/comments", "description": "Get post comments", "params": "count, sort"},
         ],
     }
 
@@ -253,3 +268,41 @@ async def get_list_tweets(
 ):
     """Get tweets from a specific Twitter list."""
     return await scraper.get_list_tweets(list_id, count)
+
+
+# --- Reddit endpoints ---
+
+
+@app.get("/reddit/subreddit/{name}")
+async def get_subreddit_posts(
+    name: str,
+    sort: str = Query(default="hot", pattern="^(hot|new|top|rising)$"),
+    time_filter: str = Query(default="day", pattern="^(hour|day|week|month|year|all)$"),
+    count: int = Query(default=25, ge=1, le=100),
+    _: str = Security(verify_api_key),
+):
+    """Get posts from a subreddit. Sort: hot, new, top, rising. Time filter applies to 'top' sort."""
+    return await reddit.get_subreddit_posts(name, sort, time_filter, count)
+
+
+@app.get("/reddit/search")
+async def search_reddit(
+    query: str = Query(..., min_length=1),
+    sort: str = Query(default="relevance", pattern="^(relevance|hot|top|new|comments)$"),
+    time_filter: str = Query(default="week", pattern="^(hour|day|week|month|year|all)$"),
+    count: int = Query(default=25, ge=1, le=100),
+    _: str = Security(verify_api_key),
+):
+    """Search Reddit posts across all subreddits."""
+    return await reddit.search_reddit(query, sort, time_filter, count)
+
+
+@app.get("/reddit/post/{post_id}/comments")
+async def get_post_comments(
+    post_id: str,
+    count: int = Query(default=25, ge=1, le=100),
+    sort: str = Query(default="best", pattern="^(best|top|new|controversial|old|qa)$"),
+    _: str = Security(verify_api_key),
+):
+    """Get comments on a Reddit post."""
+    return await reddit.get_post_comments(post_id, count, sort)
