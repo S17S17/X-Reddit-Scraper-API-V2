@@ -174,8 +174,8 @@ Authentication: Predefined Credential Type > Header Auth > Scraper API Key
 ```
 
 See the included guide docs for detailed n8n configurations:
-- `n8n-http-request-guide.md` — Full guide for all 22 endpoints as HTTP Request nodes
-- `n8n-twitter-tools-guide.md` — Guide for adding endpoints as AI agent tool nodes
+- `API-ENDPOINTS-GUIDE.md` — Complete guide for all 22 endpoints with visual URL breakdowns and step-by-step instructions
+- `n8n-http-request-guide.md` — Quick reference for HTTP Request nodes in n8n workflows
 
 ## Project Structure
 
