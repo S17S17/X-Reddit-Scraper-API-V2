@@ -1,6 +1,30 @@
+# Secrets & sessions
 .env
 cookies.json
+
+# Python
 __pycache__/
 *.pyc
 .venv/
 venv/
+
+# IDE
+.vs/
+.vscode/
+*.swp
+*.swo
+
+# Claude Code
+.claude/
+
+# Internal docs (kept locally, not in repo)
+FULL_REPORT.md
+TTE-API-USE-CASES-MASTERPLAN.md
+generated-content-*.md
+
+# n8n workflow JSONs (may contain API keys — kept locally)
+n8n-*.json
+
+# Misc
+nul
+*.bak

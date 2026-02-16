@@ -143,6 +143,25 @@ async def search_reddit(
     return {"query": query, "sort": sort, "count": len(posts), "posts": posts}
 
 
+async def get_post_details(post_id: str) -> dict:
+    """Get full details of a Reddit post by ID."""
+    url = f"{BASE_URL}/comments/{post_id}.json"
+    params = {"limit": 1, "raw_json": 1}
+
+    data = await _rate_limited_get(url, params)
+
+    # Reddit returns [post_listing, comments_listing]
+    if not isinstance(data, list) or len(data) < 1:
+        raise RedditError("Unexpected Reddit post response format.", status_code=502)
+
+    post_children = data[0].get("data", {}).get("children", [])
+    if not post_children:
+        raise RedditError("Post not found.", status_code=404)
+
+    post = _parse_post(post_children[0])
+    return {"post": post}
+
+
 async def get_post_comments(
     post_id: str,
     count: int = 25,

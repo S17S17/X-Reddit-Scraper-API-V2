@@ -39,13 +39,13 @@ In n8n, add a new node: **HTTP Request Tool** (under AI > Tools)
 |---|---|
 | **Name** | `Twitter Search` |
 | **Method** | GET |
-| **URL** | `https://web-production-91ed.up.railway.app/search/tweets` |
+| **URL** | `https://your-app.up.railway.app/search/tweets` |
 | **Description** | `Search Twitter/X for live tweets about any topic. Use this to find real-time public reactions, trending discussions, and what people are saying RIGHT NOW about a subject. Returns tweet text, author info, and engagement metrics. Input a search query keyword or hashtag.` |
 
 **Headers:**
 | Header Name | Value |
 |---|---|
-| `X-API-Key` | `123456` (your actual API key) |
+| `X-API-Key` | `YOUR_API_KEY` (your actual API key) |
 
 **Query Parameters:**
 | Parameter | Value |
@@ -63,13 +63,13 @@ Add another **HTTP Request Tool** node:
 |---|---|
 | **Name** | `Twitter User Tweets` |
 | **Method** | GET |
-| **URL** | Use expression: `https://web-production-91ed.up.railway.app/user/{{ $fromAI('username', 'Twitter username without @', 'string') }}/tweets` |
+| **URL** | Use expression: `https://your-app.up.railway.app/user/{{ $fromAI('username', 'Twitter username without @', 'string') }}/tweets` |
 | **Description** | `Get recent tweets from a specific Twitter/X user. Use this to analyze what a person or company has been tweeting about recently. Useful for competitor analysis or checking a creator's recent activity. Input: username without the @ symbol.` |
 
 **Headers:**
 | Header Name | Value |
 |---|---|
-| `X-API-Key` | `123456` (your actual API key) |
+| `X-API-Key` | `YOUR_API_KEY` (your actual API key) |
 
 **Query Parameters:**
 | Parameter | Value |
@@ -86,13 +86,13 @@ Add another **HTTP Request Tool** node:
 |---|---|
 | **Name** | `Twitter User Profile` |
 | **Method** | GET |
-| **URL** | Use expression: `https://web-production-91ed.up.railway.app/user/{{ $fromAI('username', 'Twitter username without @', 'string') }}` |
+| **URL** | Use expression: `https://your-app.up.railway.app/user/{{ $fromAI('username', 'Twitter username without @', 'string') }}` |
 | **Description** | `Get a Twitter/X user's profile info including bio, follower count, following count, and verified status. Use this when the content mentions a specific person or brand and you need their social proof data. Input: username without the @ symbol.` |
 
 **Headers:**
 | Header Name | Value |
 |---|---|
-| `X-API-Key` | `123456` (your actual API key) |
+| `X-API-Key` | `YOUR_API_KEY` (your actual API key) |
 
 No query parameters needed.
 

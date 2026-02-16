@@ -34,11 +34,11 @@ app = FastAPI(
     description=(
         "Free, self-hosted Twitter/X + Reddit scraper API. "
         "Replaces paid services like Apify ($29/mo). "
-        "21 endpoints: Twitter (user profiles, tweets, followers, following, likes, media, "
-        "lists, search, trends, replies) + Reddit (subreddits, search, comments). "
+        "22 endpoints: Twitter (user profiles, tweets, followers, following, likes, media, "
+        "lists, search, trends, replies) + Reddit (subreddits, search, post details, comments). "
         "Built for n8n workflow automation and the TTE Intelligence Pipeline."
     ),
-    version="3.0.0",
+    version="3.1.0",
     lifespan=lifespan,
 )
 
@@ -70,15 +70,15 @@ class CookiesInput(BaseModel):
 @app.get("/health")
 async def health():
     """Basic health check. No auth required."""
-    return {"status": "ok", "version": "3.0.0", "endpoints": 21}
+    return {"status": "ok", "version": "3.1.0", "endpoints": 22}
 
 
 @app.get("/endpoints")
 async def list_endpoints():
     """List all available API endpoints. No auth required. Useful for n8n agent discovery."""
     return {
-        "version": "3.0.0",
-        "total_endpoints": 21,
+        "version": "3.1.0",
+        "total_endpoints": 22,
         "auth": [
             {"method": "POST", "path": "/auth/login", "description": "Login with credentials"},
             {"method": "POST", "path": "/auth/set-cookies", "description": "Set browser cookies (Cloudflare bypass)"},
@@ -110,6 +110,7 @@ async def list_endpoints():
         "reddit": [
             {"method": "GET", "path": "/reddit/subreddit/{name}", "description": "Get subreddit posts", "params": "sort (hot/new/top/rising), time_filter, count"},
             {"method": "GET", "path": "/reddit/search", "description": "Search Reddit posts", "params": "query, sort, time_filter, count"},
+            {"method": "GET", "path": "/reddit/post/{post_id}", "description": "Get post details by ID"},
             {"method": "GET", "path": "/reddit/post/{post_id}/comments", "description": "Get post comments", "params": "count, sort"},
         ],
     }
@@ -295,6 +296,15 @@ async def search_reddit(
 ):
     """Search Reddit posts across all subreddits."""
     return await reddit.search_reddit(query, sort, time_filter, count)
+
+
+@app.get("/reddit/post/{post_id}")
+async def get_post_details(
+    post_id: str,
+    _: str = Security(verify_api_key),
+):
+    """Get full details of a Reddit post by ID (without comments)."""
+    return await reddit.get_post_details(post_id)
 
 
 @app.get("/reddit/post/{post_id}/comments")
