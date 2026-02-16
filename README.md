@@ -225,6 +225,4 @@ runtime.txt         # Python version for Railway
 4. Push to the branch (`git push origin feature/new-endpoint`)
 5. Open a Pull Request
 
-## Built With
-
-Built using [Claude Code](https://claude.ai/claude-code) by Anthropic.
+## Semah AI
