@@ -1,3 +1,6 @@
+
+<img width="1024" height="572" alt="github repo thumbnail" src="https://github.com/user-attachments/assets/e423913b-2481-4197-9955-d06e41c800e4" />
+
 # FREE Twitter/X & Reddit Scraper API
 
 A free, self-hosted REST API that scrapes **Twitter/X** and **Reddit** data. Built with FastAPI, designed for automation workflows (n8n, Make, Zapier) and AI agent pipelines.
