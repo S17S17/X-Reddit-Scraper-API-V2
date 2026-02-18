@@ -1,11 +1,24 @@
-
 <img width="1024" height="572" alt="github repo thumbnail" src="https://github.com/user-attachments/assets/e423913b-2481-4197-9955-d06e41c800e4" />
 
 # FREE Twitter/X & Reddit Scraper API
 
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
+[![Railway](https://img.shields.io/badge/Deploy-Railway-blueviolet)](https://railway.app)
+[![n8n Compatible](https://img.shields.io/badge/n8n-Compatible-orange)](https://n8n.io)
+
+⭐ **Star this repo if it saves you time!**
+
 A free, self-hosted REST API that scrapes **Twitter/X** and **Reddit** data. Built with FastAPI, designed for automation workflows (n8n, Make, Zapier) and AI agent pipelines.
 
 **No paid API keys needed.** Twitter uses your own session cookies. Reddit uses public endpoints.
+
+## What You Can Build
+
+- 🤖 **AI Agent Tools** - Turn all 22 endpoints into MCP tools for Claude/ChatGPT
+- 📊 **Daily Intelligence Feeds** - Auto-scrape Twitter + Reddit into Airtable
+- 📈 **Trend Monitors** - Track keywords and get Slack alerts
+- 🧵 **Thread Generators** - Find trending topics → write threads automatically
+- 🔍 **Competitor Spies** - Monitor accounts and hashtags in real-time
 
 ## Features
 
@@ -27,7 +40,7 @@ A free, self-hosted REST API that scrapes **Twitter/X** and **Reddit** data. Bui
 | Twitter Scraper | [twikit](https://github.com/d60/twikit) |
 | Reddit Scraper | [httpx](https://www.python-httpx.org/) + Reddit `.json` endpoints |
 | Server | Uvicorn |
-| Hosting | [Railway](https://railway.app/) (free tier) |
+| Hosting | [Railway](https://railway.app/) (free tier) or Local + ngrok |
 
 ## Quick Start
 
@@ -154,6 +167,70 @@ Most endpoints accept `count` (1-100) as a query parameter. Reddit endpoints als
 
 > **Note:** Railway's filesystem resets on each deploy. You'll need to re-inject Twitter cookies after every deployment.
 
+## Local Hosting + ngrok (Recommended for Twitter)
+
+> **Why run locally?** Cloud providers use datacenter IPs that Twitter actively flags and blocks (403 errors). Your home IP is a residential IP — platforms trust it. Running locally is stealth mode. **This is especially important for Twitter endpoints.** Reddit works fine on Railway since it uses public endpoints.
+
+### Why Local Beats Cloud for Twitter
+
+| | Cloud (Railway) | Local + ngrok |
+|---|---|---|
+| IP Type | Datacenter (flagged) | Residential (trusted) |
+| Block Rate | High | Low |
+| Cost | Free tier | Free |
+| Setup | Easy, but fails | Requires tunnel |
+
+### Setup: Local + ngrok in 4 Steps
+
+**Step 1 — Run the API locally**
+
+```bash
+python -m uvicorn app.main:app --reload
+```
+
+You should see: `Uvicorn running on http://127.0.0.1:8000`
+
+**Step 2 — Install and run ngrok**
+
+[Download ngrok](https://ngrok.com/download), then in a **new terminal**:
+
+```bash
+ngrok http 8000
+```
+
+Copy the `Forwarding` URL — it looks like:
+```
+https://YOUR-ID.ngrok-free.app -> http://localhost:8000
+```
+
+**Step 3 — Use the ngrok URL in n8n**
+
+Replace your Railway URL with the ngrok URL in all HTTP Request nodes:
+
+```
+https://YOUR-ID.ngrok-free.app/search/tweets?query=AI&count=15
+```
+
+**Step 4 — Handle the changing URL**
+
+Free ngrok generates a new URL every restart. To avoid updating every n8n node each time:
+
+1. Create a **Global Variable** in n8n called `SCRAPER_URL`
+2. Set its value to your current ngrok URL
+3. Reference it in all nodes as `{{ $vars.SCRAPER_URL }}/search/tweets?...`
+
+Now when ngrok restarts, you only update one place.
+
+### Troubleshooting
+
+| Symptom | Cause | Fix |
+|---|---|---|
+| `403 Forbidden` | Datacenter IP blocked | Switch to Local + ngrok |
+| `ModuleNotFoundError` | Missing dependencies | Run `pip install -r requirements.txt` |
+| `Connection Refused` | Server not running | Check Terminal 1 — restart uvicorn |
+| `502 Bad Gateway` | Python server crashed | Restart uvicorn, keep ngrok running |
+| `ERR_NGROK_6022` | Free URL expired | Run `ngrok http 8000` again, update n8n |
+
 ## n8n Integration
 
 This API is designed for [n8n](https://n8n.io/) workflow automation.
@@ -174,8 +251,18 @@ Authentication: Predefined Credential Type > Header Auth > Scraper API Key
 ```
 
 See the included guide docs for detailed n8n configurations:
-- `API-ENDPOINTS-GUIDE.md` — Complete guide for all 22 endpoints with visual URL breakdowns and step-by-step instructions
-- `n8n-http-request-guide.md` — Quick reference for HTTP Request nodes in n8n workflows
+- [API-ENDPOINTS-GUIDE.md](API-ENDPOINTS-GUIDE.md) — Complete guide for all 22 endpoints with visual URL breakdowns and step-by-step instructions
+- [n8n-http-request-guide.md](n8n-http-request-guide.md) — Quick reference for HTTP Request nodes in n8n workflows
+
+### Ready-to-Import Workflows
+
+Download these from the [/workflows](workflows/) folder and import directly into n8n:
+
+| Workflow | Description |
+|---|---|
+| [Daily AI Intelligence Feed](workflows/Daily_AI_Intelligence_Feed.json) | Scrapes Twitter + Reddit + HN + Google News every morning into Airtable |
+| [Twitter & Reddit MCP Server](workflows/Twitter%20%26%20Reddit%20Scraper%20MCP%20%28tuto%29.json) | Turns all 22 endpoints into AI agent tools for Claude/ChatGPT |
+| [Trend-to-Thread Generator](workflows/Trend_to_Thread_Generator.json) | Finds trending topics and writes Twitter threads automatically |
 
 ## Project Structure
 
@@ -186,6 +273,10 @@ app/
   scraper.py        # Twitter scraper wrapping twikit
   reddit.py         # Reddit scraper using httpx + .json endpoints
   config.py         # Environment variable loading
+workflows/
+  Daily_AI_Intelligence_Feed.json
+  Twitter & Reddit Scraper MCP (tuto).json
+  Trend_to_Thread_Generator.json
 requirements.txt    # Python dependencies
 Procfile            # Railway deployment command
 runtime.txt         # Python version for Railway
@@ -215,6 +306,7 @@ runtime.txt         # Python version for Railway
 | Railway resets filesystem on deploy | Re-inject cookies after each deploy |
 | `/trends` may return empty | Twitter limitation with cookie-only auth |
 | Reddit selftext truncated at 2000 chars | By design, to keep responses manageable |
+| Twitter blocked on cloud IPs | Use Local + ngrok setup |
 
 ## License
 
@@ -222,10 +314,29 @@ runtime.txt         # Python version for Railway
 
 ## Contributing
 
+Pull requests are welcome! Areas where contributions would be especially valuable:
+
+- Additional Reddit endpoints (user profiles, comment threads)
+- Twitter Spaces support
+- Rate limiting improvements
+- Error handling enhancements
+- Additional n8n workflow examples
+
+**How to contribute:**
+
 1. Fork the repo
 2. Create a feature branch (`git checkout -b feature/new-endpoint`)
 3. Commit your changes
 4. Push to the branch (`git push origin feature/new-endpoint`)
 5. Open a Pull Request
 
-## Semah AI
+## Get Support & Exclusive Workflows
+
+- 💬 [Join Agentic AI Society](https://skool.com/eye-on-ai-9025) for premium workflows and automation deep dives
+- 🐦 Follow [@Semah____](https://twitter.com/Semah____) for AI automation tips
+- ⭐ Star this repo to support the project
+- 🐛 Report issues on [GitHub Issues](https://github.com/S17S17/twitter-scraper-api/issues)
+
+---
+
+**Built by [Semah AI](https://skool.com/eye-on-ai-9025)** — Automating the future, one API at a time.
