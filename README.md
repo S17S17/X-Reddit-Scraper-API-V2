@@ -262,7 +262,6 @@ Download these from the [/workflows](workflows/) folder and import directly into
 |---|---|
 | [Daily AI Intelligence Feed](workflows/Daily_AI_Intelligence_Feed.json) | Scrapes Twitter + Reddit + HN + Google News every morning into Airtable |
 | [Twitter & Reddit MCP Server](workflows/Twitter%20%26%20Reddit%20Scraper%20MCP%20%28tuto%29.json) | Turns all 22 endpoints into AI agent tools for Claude/ChatGPT |
-| [Trend-to-Thread Generator](workflows/Trend_to_Thread_Generator.json) | Finds trending topics and writes Twitter threads automatically |
 
 ## Project Structure
 
@@ -276,7 +275,6 @@ app/
 workflows/
   Daily_AI_Intelligence_Feed.json
   Twitter & Reddit Scraper MCP (tuto).json
-  Trend_to_Thread_Generator.json
 requirements.txt    # Python dependencies
 Procfile            # Railway deployment command
 runtime.txt         # Python version for Railway
