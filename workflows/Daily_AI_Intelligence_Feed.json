@@ -1,0 +1,1604 @@
+{
+  "name": "5 - Daily AI Intelligence Feed",
+  "nodes": [
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://YOUR-APP.up.railway.app/auth/set-cookies",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "X-API-Key",
+              "value": "tte-scraper-2026-xK9mP4vL7nQ2wR"
+            }
+          ]
+        },
+        "sendBody": true,
+        "contentType": "raw",
+        "rawContentType": "application/json",
+        "body": "{\"auth_token\": \"YOUR_AUTH_TOKEN\", \"ct0\": \"YOUR_CT0_TOKEN\"}",
+        "options": {}
+      },
+      "id": "6724afbd-7a7e-4ff5-bc85-d528fa445cc3",
+      "name": "Set Twitter Cookies",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1728,
+        -320
+      ],
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {},
+      "id": "e2c8431f-9996-4398-b68c-a48abfa721da",
+      "name": "Merge All",
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3,
+      "position": [
+        4496,
+        1632
+      ]
+    },
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "triggerAtHour": 8
+            }
+          ]
+        }
+      },
+      "id": "a3fb23c4-0c19-4c0e-8ce6-c1246e2eafd8",
+      "name": "Schedule Trigger1",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        2176,
+        1408
+      ]
+    },
+    {
+      "parameters": {
+        "url": "https://YOUR-APP.up.railway.app/search/tweets?query=AI%20automation%20tools&count=15",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "X-API-Key",
+              "value": "123456"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "55cd15b1-79d2-43a6-8021-bc42b27b59c2",
+      "name": "TW: AI Automation1",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        2752,
+        -576
+      ],
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "url": "https://YOUR-APP.up.railway.app/search/tweets?query=Claude%20AI%20OR%20Anthropic%20Claude&count=15",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "X-API-Key",
+              "value": "123456"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "4d02c0ed-84ab-49eb-98b3-638604d93889",
+      "name": "TW: Claude AI1",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        2752,
+        -384
+      ],
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "url": "https://YOUR-APP.up.railway.app/search/tweets?query=AI%20use%20cases&count=15",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "X-API-Key",
+              "value": "123456"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "114b3a0e-79b4-45c2-85bf-82241d332322",
+      "name": "TW: AI Use Cases1",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        2752,
+        -192
+      ],
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "url": "https://YOUR-APP.up.railway.app/search/tweets?query=n8n%20workflow%20OR%20n8n%20automation&count=15",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "X-API-Key",
+              "value": "123456"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "649cbd0b-4aa4-4c49-b8f2-f15cd41466d8",
+      "name": "TW: n8n1",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        2752,
+        0
+      ],
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "url": "https://YOUR-APP.up.railway.app/search/tweets?query=AI%20tutorial&count=15",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "X-API-Key",
+              "value": "123456"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "da9b4b34-9b48-4eec-a380-86a246cf8117",
+      "name": "TW: AI Tutorials1",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        2752,
+        192
+      ],
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "url": "https://YOUR-APP.up.railway.app/search/tweets?query=combining%20AI%20tools&count=15",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "X-API-Key",
+              "value": "123456"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "1584ed23-9a40-42ca-a7ec-6cef7fbd117c",
+      "name": "TW: AI Tool Combos1",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        2752,
+        384
+      ],
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "url": "https://YOUR-APP.up.railway.app/trends?category=trending",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "X-API-Key",
+              "value": "123456"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "8de3d1a2-dfbf-4f97-8957-7431cedec4d8",
+      "name": "TW: Trends1",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        2752,
+        576
+      ],
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "url": "https://YOUR-APP.up.railway.app/reddit/subreddit/artificial?sort=top&time_filter=day&count=15",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "X-API-Key",
+              "value": "123456"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "2b5f91a5-55b4-4ace-9311-0f5e13dd0cc9",
+      "name": "RD: artificial1",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        2752,
+        1344
+      ],
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "url": "https://YOUR-APP.up.railway.app/reddit/subreddit/ChatGPT?sort=top&time_filter=day&count=15",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "X-API-Key",
+              "value": "123456"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "70142e0b-67bd-4342-9efd-5f4166d5aeec",
+      "name": "RD: ChatGPT1",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        2752,
+        1536
+      ],
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "url": "https://YOUR-APP.up.railway.app/reddit/subreddit/ClaudeAI?sort=top&time_filter=day&count=15",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "X-API-Key",
+              "value": "123456"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "30ed53f8-9177-49c9-8bc2-91b6f085bc90",
+      "name": "RD: ClaudeAI1",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        2752,
+        1728
+      ],
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "url": "https://YOUR-APP.up.railway.app/reddit/subreddit/LocalLLaMA?sort=top&time_filter=day&count=15",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "X-API-Key",
+              "value": "123456"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "36705824-2ace-4bdd-bb5c-9c260049153a",
+      "name": "RD: LocalLLaMA1",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        2752,
+        1920
+      ],
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "url": "https://YOUR-APP.up.railway.app/reddit/subreddit/n8n?sort=top&time_filter=day&count=15",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "X-API-Key",
+              "value": "123456"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "e7b364fd-39b9-4a30-af55-63728ae5802a",
+      "name": "RD: n8n1",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        2752,
+        2112
+      ],
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "url": "https://YOUR-APP.up.railway.app/reddit/subreddit/MachineLearning?sort=top&time_filter=day&count=15",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "X-API-Key",
+              "value": "123456"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "8246af0e-5f8b-485d-8e0d-a4116611812f",
+      "name": "RD: MachineLearning1",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        2752,
+        2304
+      ],
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "url": "https://YOUR-APP.up.railway.app/reddit/subreddit/singularity?sort=top&time_filter=day&count=15",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "X-API-Key",
+              "value": "123456"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "a469a485-fa85-45c7-a2f9-4213582ba4d6",
+      "name": "RD: singularity1",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        2752,
+        2496
+      ],
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "url": "https://YOUR-APP.up.railway.app/reddit/subreddit/AItools?sort=top&time_filter=day&count=15",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "X-API-Key",
+              "value": "123456"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "9f8011c6-5308-47a9-9121-bd7fce4a1115",
+      "name": "RD: AItools1",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        2752,
+        2688
+      ],
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "url": "https://hn.algolia.com/api/v1/search?query=AI&tags=story&hitsPerPage=20&numericFilters=points%3E10",
+        "options": {}
+      },
+      "id": "60d9ef37-2a3a-498e-a31f-b617634d6d42",
+      "name": "HN: AI stories1",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        2752,
+        768
+      ],
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "url": "https://hn.algolia.com/api/v1/search?query=machine%20learning&tags=story&hitsPerPage=15&numericFilters=points%3E10",
+        "options": {}
+      },
+      "id": "cae2db27-92a7-47d5-b8cf-fa6ff6f777b6",
+      "name": "HN: ML stories1",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        2752,
+        960
+      ],
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "url": "https://hn.algolia.com/api/v1/search?query=LLM%20OR%20ChatGPT%20OR%20Claude&tags=story&hitsPerPage=15&numericFilters=points%3E10",
+        "options": {}
+      },
+      "id": "67d8bf92-5f5f-4cfe-8067-89e9b6ad97e8",
+      "name": "HN: LLM stories1",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        2752,
+        1152
+      ],
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "url": "https://news.google.com/rss/search?q=AI+automation+tools&hl=en-US&gl=US&ceid=US:en",
+        "options": {}
+      },
+      "id": "86097c6a-e607-4fb5-b516-4bf2de001c32",
+      "name": "GNews: AI automation1",
+      "type": "n8n-nodes-base.rssFeedRead",
+      "typeVersion": 1,
+      "position": [
+        2752,
+        2880
+      ],
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "url": "https://news.google.com/rss/search?q=Claude+AI+OR+Anthropic&hl=en-US&gl=US&ceid=US:en",
+        "options": {}
+      },
+      "id": "998cbd87-711d-499a-a8ac-f7b975549e7a",
+      "name": "GNews: Claude Anthropic1",
+      "type": "n8n-nodes-base.rssFeedRead",
+      "typeVersion": 1,
+      "position": [
+        2752,
+        3072
+      ],
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "url": "https://news.google.com/rss/search?q=artificial+intelligence+news&hl=en-US&gl=US&ceid=US:en",
+        "options": {}
+      },
+      "id": "4174ea1d-d0a0-4c6c-9c79-45ee2e5e5064",
+      "name": "GNews: AI news1",
+      "type": "n8n-nodes-base.rssFeedRead",
+      "typeVersion": 1,
+      "position": [
+        2752,
+        3264
+      ],
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "numberInputs": 15
+      },
+      "id": "5ac199f3-7955-4e79-a690-3744c8a29f0c",
+      "name": "Merge Social1",
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3,
+      "position": [
+        3712,
+        1136
+      ]
+    },
+    {
+      "parameters": {
+        "numberInputs": 6
+      },
+      "id": "97cc6a70-3522-4266-a53f-99915c1dcdff",
+      "name": "Merge News1",
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3,
+      "position": [
+        3696,
+        2448
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "const items = $input.all();\n\n// The previous node (Normalize & Deduplicate2) already sorted items by engagement.\n// We take the top 50 to avoid overloading the AI with too much text.\nconst topItems = items.slice(0, 50);\n\nlet text = `AI INTELLIGENCE DATA - ${new Date().toISOString().split('T')[0]}\\n`;\ntext += `Total items analyzing: ${topItems.length} (out of ${items.length} collected)\\n\\n`;\n\n// 1. Calculate stats using the standardized 'Source' field\nconst counts = { Twitter: 0, Reddit: 0, HackerNews: 0, GoogleNews: 0, Other: 0 };\n\nfor (const item of items) {\n  const src = item.json.Source; // Using Capitalized 'S' from your schema\n  if (counts[src] !== undefined) {\n    counts[src]++;\n  } else {\n    counts.Other++;\n  }\n}\n\ntext += `Sources Breakdown: ${counts.Twitter} Tweets, ${counts.Reddit} Reddit posts, ${counts.HackerNews} HN stories, ${counts.GoogleNews} News articles\\n\\n`;\ntext += '--- TOP STORIES BY ENGAGEMENT ---\\n\\n';\n\n// 2. Build the formatted text for the AI\nfor (let i = 0; i < topItems.length; i++) {\n  const d = topItems[i].json;\n\n  // We use the EXACT capitalized keys your previous node output\n  const source = d.Source || 'Unknown';\n  const title = d.Title || 'No Title';\n  const author = d.Author || 'Unknown';\n  const score = d.Engagement_Score || 0;\n  const detail = d.Source_Detail || ''; // e.g., \"Twitter Search: query\"\n  const url = d.URL || '';\n  const content = d.Content || '';\n\n  text += `[${i+1}] [${source}] ${title}\\n`;\n  text += `    Engagement: ${score} | Author: ${author} | Context: ${detail}\\n`;\n  \n  // Add a content snippet only if it provides extra info (longer than title)\n  if (content && content.length > title.length + 20) {\n    // Clean up newlines to make it compact for the AI\n    const cleanContent = content.replace(/\\n+/g, ' ').substring(0, 250);\n    text += `    Snippet: ${cleanContent}...\\n`;\n  }\n  \n  text += `    URL: ${url}\\n\\n`;\n}\n\n// 3. Return a single item containing the prepared text\nreturn [{\n  json: {\n    input_text: text,\n    stats: counts\n  }\n}];"
+      },
+      "id": "4a1a39ba-4977-4c3d-a657-cd332ac886a3",
+      "name": "Prepare AI Input1",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        4944,
+        1776
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "const input = $input.first();\n\n// 1. Get the AI Data\n// Since you use a Structured Output Parser, .output is ALREADY a JSON object.\n// We default to an empty object {} if it's missing to prevent crashes.\nlet aiData = input.json.output || {};\n\n// Fallback: If for some reason it IS a string (e.g. parser failed), parse it manually\nif (typeof aiData === 'string') {\n    try {\n        // Remove any markdown code blocks if present\n        const cleanJson = aiData.replace(/```json\\n|\\n```/g, '');\n        aiData = JSON.parse(cleanJson);\n    } catch (e) {\n        console.log(\"Manual parsing failed, using raw text as summary\");\n        aiData = { executive_summary: aiData };\n    }\n}\n\n// 2. Get Stats from the previous \"Prepare AI Input1\" node\n// We look back to grab the counts so we can pass them to the final report\nlet stats = { Twitter: 0, Reddit: 0, HackerNews: 0, GoogleNews: 0 };\ntry {\n    const prepNode = $('Prepare AI Input1').first().json;\n    if (prepNode.stats) {\n        stats = prepNode.stats;\n    }\n} catch(e) {\n    console.log(\"Could not fetch stats from previous node\");\n}\n\n// 3. Output the Final Structure\nreturn [{\n    json: {\n        date: new Date().toISOString().split('T')[0],\n        \n        // AI Content\n        executive_summary: aiData.executive_summary || \"No summary generated\",\n        \n        // We stringify arrays because most databases/Airtable fields prefer text for lists\n        top_stories: JSON.stringify(aiData.top_stories || []),\n        content_ideas: JSON.stringify(aiData.content_ideas || []),\n        trending_topics: JSON.stringify(aiData.trending_topics || []),\n        \n        // Metadata / Stats (Mapping the keys from the Prepare node)\n        tweet_count: stats.Twitter || 0,\n        reddit_count: stats.Reddit || 0,\n        hn_count: stats.HackerNews || 0,\n        news_count: stats.GoogleNews || 0,\n        \n        // Keep the full raw object just in case you need it later\n        parsed_data: aiData\n    }\n}];"
+      },
+      "id": "be8fd6a0-4527-489e-a0b2-01a3668e1521",
+      "name": "Parse AI Output1",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        5728,
+        1728
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "create",
+        "base": {
+          "__rl": true,
+          "value": "YOUR_AIRTABLE_BASE_ID",
+          "mode": "list",
+          "cachedResultName": "TTE Empire",
+          "cachedResultUrl": "https://airtable.com/YOUR_AIRTABLE_BASE_ID"
+        },
+        "table": {
+          "__rl": true,
+          "value": "YOUR_TABLE_ID",
+          "mode": "list",
+          "cachedResultName": "Daily AI Reports",
+          "cachedResultUrl": "https://airtable.com/YOUR_AIRTABLE_BASE_ID/YOUR_TABLE_ID"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Tweet_Count": "={{ $json.tweet_count }}",
+            "Reddit_Post_Count": "={{ $json.reddit_count }}",
+            "HN_Count": "={{ $json.hn_count }}",
+            "News_Count ": "={{ $json.news_count }}",
+            "Executive_Summary": "={{ $json.executive_summary }}",
+            "Date": "={{ $json.date }}",
+            "Top_Stories": "={{ $json.top_stories }}",
+            "Content_Ideas": "={{ $json.content_ideas }}",
+            "Trending_Topics": "={{ $json.trending_topics }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "Date",
+              "displayName": "Date",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "dateTime",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Executive_Summary",
+              "displayName": "Executive_Summary",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Top_Stories",
+              "displayName": "Top_Stories",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Content_Ideas",
+              "displayName": "Content_Ideas",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Trending_Topics",
+              "displayName": "Trending_Topics",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Tweet_Count",
+              "displayName": "Tweet_Count",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "number",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Reddit_Post_Count",
+              "displayName": "Reddit_Post_Count",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "number",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "HN_Count",
+              "displayName": "HN_Count",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "number",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "News_Count ",
+              "displayName": "News_Count ",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "number",
+              "readOnly": false,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {
+          "typecast": true
+        }
+      },
+      "id": "27ded63e-dd53-4090-9f57-e0d4838f7cbd",
+      "name": "Save Daily Report1",
+      "type": "n8n-nodes-base.airtable",
+      "typeVersion": 2.1,
+      "position": [
+        5952,
+        1632
+      ],
+      "credentials": {
+        "airtableTokenApi": {
+          "id": "3yLwOhkdnETObnIm",
+          "name": "Airtable Personal Access Token account"
+        }
+      },
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "jsCode": "const data = $input.first().json;\nconst parsed = data.parsed_data || {};\n\n// Helpers to prevent crashes\nconst stories = Array.isArray(parsed.top_stories) ? parsed.top_stories : [];\nconst topics = Array.isArray(parsed.trending_topics) ? parsed.trending_topics : [];\nconst ideas = Array.isArray(parsed.content_ideas) ? parsed.content_ideas : [];\n\n// 1. HEADER\n// We use \\n for new lines. \nlet msg = `\ud83d\udcca *AI INTELLIGENCE BRIEF* \\n`;\nmsg += `\ud83d\udcc5 _${data.date}_\\n`;\nmsg += `--------------------------------\\n\\n`;\n\n// 2. EXECUTIVE SUMMARY\n// We use > to create a \"quote\" block effect\nif (parsed.executive_summary) {\n  msg += `*\ud83e\uddd0 EXECUTIVE SUMMARY*\\n`;\n  msg += `_${parsed.executive_summary.substring(0, 400)}..._\\n\\n`; \n}\n\n// 3. TOP STORIES (With Clickable Links)\nif (stories.length > 0) {\n  msg += `*\ud83d\udd25 TOP STORIES*\\n`;\n  \n  // We take the top 5\n  stories.slice(0, 5).forEach((s, i) => {\n    // Fallbacks\n    const title = s.title || 'Untitled';\n    const source = s.source || 'Source';\n    const url = s.url || 'https://google.com';\n    const potential = s.content_potential || 'Medium';\n    \n    // FORMAT: 1. [Source] Title (Link)\n    // We wrap the title in [ ] and the url in ( ) to make it clickable\n    msg += `${i+1}\\\\. *[${source}]* [${title}](${url})\\n`;\n    msg += `   \u2514 \ud83c\udfaf _${s.category || 'General'} (${potential} Potential)_\\n\\n`;\n  });\n}\n\n// 4. TRENDING TOPICS (Bullet points)\nif (topics.length > 0) {\n  msg += `*\ud83d\udcc8 TRENDING TOPICS*\\n`;\n  topics.slice(0, 5).forEach(t => {\n    msg += `\u2022 ${t}\\n`;\n  });\n  msg += `\\n`;\n}\n\n// 5. CONTENT IDEAS\nif (ideas.length > 0) {\n  msg += `*\ud83d\udca1 CONTENT IDEAS*\\n`;\n  ideas.slice(0, 3).forEach(idea => {\n    msg += `\u2022 ${idea}\\n`;\n  });\n  msg += `\\n`;\n}\n\nmsg += `_\ud83e\udd16 Generated by TTE Pipeline_`;\n\nreturn [{ json: { text: msg } }];"
+      },
+      "id": "8314a7e6-b9dc-4c2c-a458-1e4aa7686758",
+      "name": "Format Telegram1",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        5968,
+        1888
+      ]
+    },
+    {
+      "parameters": {
+        "model": "google/gemini-3-pro-preview",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenRouter",
+      "typeVersion": 1,
+      "position": [
+        5152,
+        1984
+      ],
+      "id": "ee560e2b-c529-411c-94db-313dc69b37f3",
+      "name": "OpenRouter Chat Model",
+      "credentials": {
+        "openRouterApi": {
+          "id": "OzcU7iDtO9WMSsyo",
+          "name": "OpenRouter account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "const allItems = $input.all();\nconst normalized = [];\nconst seenUrls = new Set();\n\n// Format date as YYYY-MM-DD for Airtable date field\nconst today = new Date().toISOString().split('T')[0];\n\nfor (const item of allItems) {\n  const data = item.json;\n\n  // Skip error items from failed requests\n  if (data.error || (data.message && !data.title && !data.tweets && !data.posts && !data.hits && !data.trends)) continue;\n\n  // Twitter search results (have tweets array)\n  if (data.tweets && Array.isArray(data.tweets)) {\n    for (const tweet of data.tweets) {\n      const url = `https://twitter.com/${tweet.user?.username || 'unknown'}/status/${tweet.id}`;\n      if (seenUrls.has(url)) continue;\n      seenUrls.add(url);\n      normalized.push({\n        json: {\n          Date: today,\n          Source: 'Twitter',\n          Platform_ID: String(tweet.id),\n          Title: (tweet.text || '').substring(0, 200),\n          Content: tweet.text || '',\n          Author: tweet.user?.username || tweet.user?.name || 'unknown',\n          URL: url,\n          Engagement_Score: (tweet.favorite_count || 0) + (tweet.retweet_count || 0),\n          Subreddit: '',\n          Search_Query: data.query || '',\n          Source_Detail: `Twitter Search: ${data.query || ''}`,\n          // Add unique key for Airtable upsert\n          Unique_Key: `twitter_${tweet.id}`\n        }\n      });\n    }\n  }\n\n  // Twitter trends (have trends array)\n  if (data.trends && Array.isArray(data.trends)) {\n    for (const trend of data.trends) {\n      const url = `https://twitter.com/search?q=${encodeURIComponent(trend.name)}`;\n      if (seenUrls.has(url)) continue;\n      seenUrls.add(url);\n      normalized.push({\n        json: {\n          Date: today,\n          Source: 'Twitter',\n          Platform_ID: `trend_${trend.name}`,\n          Title: trend.name,\n          Content: `Trending: ${trend.name} (${trend.tweet_count || 0} tweets)`,\n          Author: 'Twitter Trends',\n          URL: url,\n          Engagement_Score: trend.tweet_count || 0,\n          Subreddit: '',\n          Search_Query: '',\n          Source_Detail: 'Twitter Trending',\n          Unique_Key: `trend_${trend.name}_${today}`\n        }\n      });\n    }\n  }\n\n  // Reddit posts (have posts array)\n  if (data.posts && Array.isArray(data.posts)) {\n    for (const post of data.posts) {\n      const url = post.permalink || post.url || '';\n      if (seenUrls.has(url)) continue;\n      seenUrls.add(url);\n      normalized.push({\n        json: {\n          Date: today,\n          Source: 'Reddit',\n          Platform_ID: String(post.id),\n          Title: (post.title || '').substring(0, 200),\n          Content: post.selftext || post.title || '',\n          Author: post.author || 'unknown',\n          URL: url,\n          Engagement_Score: (post.score || 0) + (post.num_comments || 0),\n          Subreddit: post.subreddit || data.subreddit || '',\n          Search_Query: '',\n          Source_Detail: `r/${post.subreddit || data.subreddit || 'unknown'}`,\n          Unique_Key: `reddit_${post.id}`\n        }\n      });\n    }\n  }\n\n  // Hacker News (have hits array)\n  if (data.hits && Array.isArray(data.hits)) {\n    for (const hit of data.hits) {\n      const url = hit.url || `https://news.ycombinator.com/item?id=${hit.objectID}`;\n      if (seenUrls.has(url)) continue;\n      seenUrls.add(url);\n      normalized.push({\n        json: {\n          Date: today,\n          Source: 'HackerNews',\n          Platform_ID: String(hit.objectID),\n          Title: (hit.title || '').substring(0, 200),\n          Content: hit.title || '',\n          Author: hit.author || 'unknown',\n          URL: url,\n          Engagement_Score: (hit.points || 0) + (hit.num_comments || 0),\n          Subreddit: '',\n          Search_Query: '',\n          Source_Detail: `HN (${hit.points || 0} pts)`,\n          Unique_Key: `hn_${hit.objectID}`\n        }\n      });\n    }\n  }\n\n  // Google News RSS (individual items with title + link)\n  if (data.title && data.link && !data.tweets && !data.posts && !data.hits && !data.trends) {\n    const url = data.link;\n    if (!seenUrls.has(url)) {\n      seenUrls.add(url);\n      // Create a hash of the URL for unique key\n      const urlHash = url.split('').reduce((a, b) => {\n        a = ((a << 5) - a) + b.charCodeAt(0);\n        return a & a;\n      }, 0);\n      normalized.push({\n        json: {\n          Date: today,\n          Source: 'GoogleNews',\n          Platform_ID: url.substring(0, 100), // Truncate if too long\n          Title: (data.title || '').substring(0, 200),\n          Content: data.contentSnippet || data.content || data.title || '',\n          Author: data.creator || 'unknown',\n          URL: url,\n          Engagement_Score: 0,\n          Subreddit: '',\n          Search_Query: '',\n          Source_Detail: 'Google News RSS',\n          Unique_Key: `gnews_${Math.abs(urlHash)}`\n        }\n      });\n    }\n  }\n}\n\n// Sort by engagement score\nnormalized.sort((a, b) => b.json.Engagement_Score - a.json.Engagement_Score);\n\n// Return fallback if no data\nif (normalized.length === 0) {\n  return [{\n    json: {\n      Date: today,\n      Source: 'none',\n      Platform_ID: '',\n      Title: 'No data collected',\n      Content: '',\n      Author: '',\n      URL: '',\n      Engagement_Score: 0,\n      Subreddit: '',\n      Search_Query: '',\n      Source_Detail: '',\n      Unique_Key: `none_${today}`\n    }\n  }];\n}\n\nreturn normalized;"
+      },
+      "id": "156ba17d-0094-485e-a395-8827da50aa8a",
+      "name": "Normalize & Deduplicate2",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        4752,
+        1632
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "upsert",
+        "base": {
+          "__rl": true,
+          "value": "YOUR_AIRTABLE_BASE_ID",
+          "mode": "list",
+          "cachedResultName": "TTE Empire",
+          "cachedResultUrl": "https://airtable.com/YOUR_AIRTABLE_BASE_ID"
+        },
+        "table": {
+          "__rl": true,
+          "value": "YOUR_TABLE_ID_2",
+          "mode": "list",
+          "cachedResultName": "AI Intelligence - Raw",
+          "cachedResultUrl": "https://airtable.com/YOUR_AIRTABLE_BASE_ID/YOUR_TABLE_ID_2"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Used": false,
+            "id": "={{ $json.Unique_Key }}",
+            "Platform_ID": "={{ $json.Platform_ID }}",
+            "Date": "={{ $json.Date }}",
+            "Source": "={{ $json.Source }}",
+            "Title": "={{ $json.Title }}",
+            "URL": "={{ $json.URL }}",
+            "Content": "={{ $json.Content }}",
+            "Author": "={{ $json.Author }}",
+            "Search_Query": "={{ $json.Search_Query }}",
+            "Subreddit": "={{ $json.Subreddit }}",
+            "Engagement_Score": "={{ $json.Engagement_Score }}"
+          },
+          "matchingColumns": [
+            "id"
+          ],
+          "schema": [
+            {
+              "id": "id",
+              "displayName": "id",
+              "required": false,
+              "defaultMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": true,
+              "removed": false
+            },
+            {
+              "id": "Platform_ID",
+              "displayName": "Platform_ID",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Date",
+              "displayName": "Date",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "dateTime",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Source",
+              "displayName": "Source",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "options",
+              "options": [
+                {
+                  "name": "Twitter",
+                  "value": "Twitter"
+                },
+                {
+                  "name": "Reddit",
+                  "value": "Reddit"
+                },
+                {
+                  "name": "HackerNews",
+                  "value": "HackerNews"
+                },
+                {
+                  "name": "GoogleNews",
+                  "value": "GoogleNews"
+                }
+              ],
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Title",
+              "displayName": "Title",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Content",
+              "displayName": "Content",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Author",
+              "displayName": "Author",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "URL",
+              "displayName": "URL",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Engagement_Score",
+              "displayName": "Engagement_Score",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "number",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Subreddit",
+              "displayName": "Subreddit",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Search_Query",
+              "displayName": "Search_Query",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Category ",
+              "displayName": "Category ",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "options",
+              "options": [
+                {
+                  "name": "News",
+                  "value": "News"
+                },
+                {
+                  "name": "Use Case",
+                  "value": "Use Case"
+                },
+                {
+                  "name": "Tutorial",
+                  "value": "Tutorial"
+                },
+                {
+                  "name": "User POV",
+                  "value": "User POV"
+                },
+                {
+                  "name": "Trend",
+                  "value": "Trend"
+                },
+                {
+                  "name": "Creative Solution",
+                  "value": "Creative Solution"
+                }
+              ],
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Content_Potential ",
+              "displayName": "Content_Potential ",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "options",
+              "options": [
+                {
+                  "name": "High",
+                  "value": "High"
+                },
+                {
+                  "name": "Medium",
+                  "value": "Medium"
+                },
+                {
+                  "name": "Low",
+                  "value": "Low"
+                }
+              ],
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Used",
+              "displayName": "Used",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "boolean",
+              "readOnly": false,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {
+          "typecast": true
+        }
+      },
+      "type": "n8n-nodes-base.airtable",
+      "typeVersion": 2.1,
+      "position": [
+        4976,
+        1488
+      ],
+      "id": "094b67df-a0d1-44bf-ab4d-53eee246063f",
+      "name": "Create or update a record",
+      "credentials": {
+        "airtableTokenApi": {
+          "id": "3yLwOhkdnETObnIm",
+          "name": "Airtable Personal Access Token account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ $json.input_text }}",
+        "hasOutputParser": true,
+        "options": {
+          "systemMessage": "=You are the TTE Intelligence Analyst. Analyze the provided AI content data to produce a structured intelligence report.\n\n### OBJECTIVE\nFilter the noise and identify high-value signals for a tech content creator. You must output valid, parseable JSON only. Do not include markdown formatting (like ```json) in your response.\n\n### OUTPUT STRUCTURE (Strict JSON)\n{\n  \"executive_summary\": \"200-300 word analysis of the current AI landscape based on the input data.\",\n  \"top_stories\": [\n    {\n      \"rank\": 1,\n      \"source\": \"Name of Source\",\n      \"title\": \"Story title\",\n      \"url\": \"URL\",\n      \"category\": \"Select from: News, Use Case, Tutorial, User POV, Trend, Creative Solution\",\n      \"content_potential\": \"High, Medium, or Low\",\n      \"angle\": \"Brief actionable angle on how to use this story for content creation\"\n    }\n  ],\n  \"trending_topics\": [\n    \"topic1\",\n    \"topic2\",\n    \"topic3\",\n    \"topic4\",\n    \"topic5\"\n  ],\n  \"content_ideas\": [\n    \"Idea 1: Concise description\",\n    \"Idea 2: Concise description\",\n    \"Idea 3: Concise description\"\n  ],\n  \"categories_breakdown\": {\n    \"News\": 0,\n    \"Use Case\": 0,\n    \"Tutorial\": 0,\n    \"User POV\": 0,\n    \"Trend\": 0,\n    \"Creative Solution\": 0\n  }\n}\n\n### CONSTRAINTS\n1. Analyze the input data provided. If data is limited, prioritize quality over quantity.\n2. Select the top 10 most engaging stories for the \"top_stories\" array.\n3. \"Content Potential\" definitions:\n   - High: Viral potential, unique insight, or major news.\n   - Medium: Solid educational content or updates.\n   - Low: Generic news or filler.\n4. Ensure the JSON is valid and minified if possible to prevent syntax errors."
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        5184,
+        1776
+      ],
+      "id": "5303c3f4-143c-4812-aa2f-151c7d61e008",
+      "name": "AI Agent"
+    },
+    {
+      "parameters": {
+        "jsonSchemaExample": "{\n  \"executive_summary\": \"200-300 word analysis of the current AI landscape based on the input data.\",\n  \"top_stories\": [\n    {\n      \"rank\": 1,\n      \"source\": \"Name of Source\",\n      \"title\": \"Story title\",\n      \"url\": \"URL\",\n      \"category\": \"Select from: News, Use Case, Tutorial, User POV, Trend, Creative Solution\",\n      \"content_potential\": \"High, Medium, or Low\",\n      \"angle\": \"Brief actionable angle on how to use this story for content creation\"\n    }\n  ],\n  \"trending_topics\": [\n    \"topic1\",\n    \"topic2\",\n    \"topic3\",\n    \"topic4\",\n    \"topic5\"\n  ],\n  \"content_ideas\": [\n    \"Idea 1: Concise description\",\n    \"Idea 2: Concise description\",\n    \"Idea 3: Concise description\"\n  ],\n  \"categories_breakdown\": {\n    \"News\": 0,\n    \"Use Case\": 0,\n    \"Tutorial\": 0,\n    \"User POV\": 0,\n    \"Trend\": 0,\n    \"Creative Solution\": 0\n  }\n}"
+      },
+      "type": "@n8n/n8n-nodes-langchain.outputParserStructured",
+      "typeVersion": 1.3,
+      "position": [
+        5344,
+        2000
+      ],
+      "id": "33b86cc6-d6d5-4a35-b160-80948532286a",
+      "name": "Structured Output Parser"
+    },
+    {
+      "parameters": {
+        "chatId": "8186671304",
+        "text": "={{ $json.text }}",
+        "additionalFields": {
+          "appendAttribution": false,
+          "parse_mode": "Markdown"
+        }
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        6176,
+        1888
+      ],
+      "id": "eba08a98-098e-4cf9-b71e-ff8038705601",
+      "name": "Send a text message",
+      "webhookId": "e005cef0-d0b9-43c6-baff-94556e823bfe",
+      "credentials": {
+        "telegramApi": {
+          "id": "lE4WujhGC5UTNj2M",
+          "name": "Telegram account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "fieldToSplitOut": "output",
+        "include": "allOtherFields",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitOut",
+      "typeVersion": 1,
+      "position": [
+        5472,
+        1360
+      ],
+      "id": "e3a1c87c-7380-4f58-8be4-159fc0e4352f",
+      "name": "Split Out"
+    }
+  ],
+  "connections": {
+    "Merge All": {
+      "main": [
+        [
+          {
+            "node": "Normalize & Deduplicate2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Schedule Trigger1": {
+      "main": [
+        [
+          {
+            "node": "TW: AI Automation1",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "TW: Claude AI1",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "TW: AI Use Cases1",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "TW: n8n1",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "TW: AI Tutorials1",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "TW: AI Tool Combos1",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "TW: Trends1",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "RD: artificial1",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "RD: ChatGPT1",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "RD: ClaudeAI1",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "RD: LocalLLaMA1",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "RD: n8n1",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "RD: MachineLearning1",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "RD: singularity1",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "RD: AItools1",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "HN: AI stories1",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "HN: ML stories1",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "HN: LLM stories1",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "GNews: AI automation1",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "GNews: Claude Anthropic1",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "GNews: AI news1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "TW: AI Automation1": {
+      "main": [
+        [
+          {
+            "node": "Merge Social1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "TW: Claude AI1": {
+      "main": [
+        [
+          {
+            "node": "Merge Social1",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "TW: AI Use Cases1": {
+      "main": [
+        [
+          {
+            "node": "Merge Social1",
+            "type": "main",
+            "index": 2
+          }
+        ]
+      ]
+    },
+    "TW: n8n1": {
+      "main": [
+        [
+          {
+            "node": "Merge Social1",
+            "type": "main",
+            "index": 3
+          }
+        ]
+      ]
+    },
+    "TW: AI Tutorials1": {
+      "main": [
+        [
+          {
+            "node": "Merge Social1",
+            "type": "main",
+            "index": 4
+          }
+        ]
+      ]
+    },
+    "TW: AI Tool Combos1": {
+      "main": [
+        [
+          {
+            "node": "Merge Social1",
+            "type": "main",
+            "index": 5
+          }
+        ]
+      ]
+    },
+    "TW: Trends1": {
+      "main": [
+        [
+          {
+            "node": "Merge Social1",
+            "type": "main",
+            "index": 6
+          }
+        ]
+      ]
+    },
+    "RD: artificial1": {
+      "main": [
+        [
+          {
+            "node": "Merge Social1",
+            "type": "main",
+            "index": 7
+          }
+        ]
+      ]
+    },
+    "RD: ChatGPT1": {
+      "main": [
+        [
+          {
+            "node": "Merge Social1",
+            "type": "main",
+            "index": 8
+          }
+        ]
+      ]
+    },
+    "RD: ClaudeAI1": {
+      "main": [
+        [
+          {
+            "node": "Merge Social1",
+            "type": "main",
+            "index": 9
+          }
+        ]
+      ]
+    },
+    "RD: LocalLLaMA1": {
+      "main": [
+        [
+          {
+            "node": "Merge Social1",
+            "type": "main",
+            "index": 10
+          }
+        ]
+      ]
+    },
+    "RD: n8n1": {
+      "main": [
+        [
+          {
+            "node": "Merge Social1",
+            "type": "main",
+            "index": 11
+          }
+        ]
+      ]
+    },
+    "RD: MachineLearning1": {
+      "main": [
+        [
+          {
+            "node": "Merge Social1",
+            "type": "main",
+            "index": 12
+          }
+        ]
+      ]
+    },
+    "RD: singularity1": {
+      "main": [
+        [
+          {
+            "node": "Merge Social1",
+            "type": "main",
+            "index": 13
+          }
+        ]
+      ]
+    },
+    "RD: AItools1": {
+      "main": [
+        [
+          {
+            "node": "Merge Social1",
+            "type": "main",
+            "index": 14
+          }
+        ]
+      ]
+    },
+    "HN: AI stories1": {
+      "main": [
+        [
+          {
+            "node": "Merge News1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HN: ML stories1": {
+      "main": [
+        [
+          {
+            "node": "Merge News1",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "HN: LLM stories1": {
+      "main": [
+        [
+          {
+            "node": "Merge News1",
+            "type": "main",
+            "index": 2
+          }
+        ]
+      ]
+    },
+    "GNews: AI automation1": {
+      "main": [
+        [
+          {
+            "node": "Merge News1",
+            "type": "main",
+            "index": 3
+          }
+        ]
+      ]
+    },
+    "GNews: Claude Anthropic1": {
+      "main": [
+        [
+          {
+            "node": "Merge News1",
+            "type": "main",
+            "index": 4
+          }
+        ]
+      ]
+    },
+    "GNews: AI news1": {
+      "main": [
+        [
+          {
+            "node": "Merge News1",
+            "type": "main",
+            "index": 5
+          }
+        ]
+      ]
+    },
+    "Merge Social1": {
+      "main": [
+        [
+          {
+            "node": "Merge All",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Merge News1": {
+      "main": [
+        [
+          {
+            "node": "Merge All",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "Prepare AI Input1": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Parse AI Output1": {
+      "main": [
+        [
+          {
+            "node": "Save Daily Report1",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Format Telegram1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Format Telegram1": {
+      "main": [
+        [
+          {
+            "node": "Send a text message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenRouter Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Normalize & Deduplicate2": {
+      "main": [
+        [
+          {
+            "node": "Prepare AI Input1",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Create or update a record",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Structured Output Parser": {
+      "ai_outputParser": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_outputParser",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent": {
+      "main": [
+        [
+          {
+            "node": "Parse AI Output1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Split Out": {
+      "main": [
+        []
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "availableInMCP": false
+  },
+  "versionId": "513d8116-d1ff-40ea-b573-bc53e72f92a4",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "c96844d3ee30182d995f5d0b738dcc4575718a4110a943298203b6617b010941"
+  },
+  "id": "YeN50yeuM48Ybf-tcaRKt",
+  "tags": [
+    {
+      "updatedAt": "2026-02-09T13:54:32.248Z",
+      "createdAt": "2026-02-09T13:54:32.248Z",
+      "id": "IRMH853rkbnCXVEF",
+      "name": "Intelligence"
+    },
+    {
+      "updatedAt": "2026-02-09T13:54:32.195Z",
+      "createdAt": "2026-02-09T13:54:32.195Z",
+      "id": "yqtnKSUzMJ3Te7sO",
+      "name": "TTE Pipeline"
+    }
+  ]
+}
