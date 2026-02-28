@@ -4,7 +4,7 @@ from urllib.parse import quote_plus
 
 import httpx
 
-USER_AGENT = "TTE-Intelligence-Bot/1.0 (content research pipeline)"
+USER_AGENT = "TTE-Scraper-API/1.0 (by /u/TounsiTechEmpire)"
 BASE_URL = "https://www.reddit.com"
 
 # Rate limiter: Reddit allows 10 req/min for unauthenticated .json access
@@ -33,7 +33,10 @@ async def _rate_limited_get(url: str, params: dict | None = None) -> dict:
         _last_request_time = time.monotonic()
 
     async with httpx.AsyncClient(
-        headers={"User-Agent": USER_AGENT},
+        headers={
+            "User-Agent": USER_AGENT,
+            "Accept": "application/json",
+        },
         follow_redirects=True,
         timeout=15.0,
     ) as client:
@@ -50,7 +53,12 @@ async def _rate_limited_get(url: str, params: dict | None = None) -> dict:
             status_code=429,
         )
     if resp.status_code == 403:
-        raise RedditError("Reddit returned 403 Forbidden.", status_code=403)
+        raise RedditError(
+            "Reddit returned 403 Forbidden. Possible causes: subreddit is private, "
+            "User-Agent is blocked, or you're being rate-limited. "
+            "Try again later or check the subreddit name.",
+            status_code=403,
+        )
     if resp.status_code == 404:
         raise RedditError("Subreddit or post not found on Reddit.", status_code=404)
     if resp.status_code >= 500:
