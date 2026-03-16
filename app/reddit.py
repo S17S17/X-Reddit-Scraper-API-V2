@@ -4,7 +4,7 @@ from urllib.parse import quote_plus
 
 import httpx
 
-USER_AGENT = "TTE-Scraper-API/1.0 (by /u/TounsiTechEmpire)"
+USER_AGENT = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36"
 BASE_URL = "https://www.reddit.com"
 
 # Rate limiter: Reddit allows 10 req/min for unauthenticated .json access
@@ -35,7 +35,10 @@ async def _rate_limited_get(url: str, params: dict | None = None) -> dict:
     async with httpx.AsyncClient(
         headers={
             "User-Agent": USER_AGENT,
-            "Accept": "application/json",
+            "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
+            "Accept-Language": "en-US,en;q=0.5",
+            "Accept-Encoding": "gzip, deflate, br",
+            "Connection": "keep-alive",
         },
         follow_redirects=True,
         timeout=15.0,
