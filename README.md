@@ -29,7 +29,11 @@ A free, self-hosted REST API that scrapes **Twitter/X** and **Reddit** data. Bui
 - **Auto-generated Swagger docs** at `/docs`
 - **Endpoint discovery** at `/endpoints` (no auth required)
 - **Search fallback**: Tweet search auto-retries with alternate product type on 404
-- **Rate limiting**: Built-in Reddit rate limiter (6.5s between requests)
+- **Twitter resilience**: 3 automatic retries with exponential backoff on timeouts (3s → 6s → 12s)
+- **Reddit resilience**: 3 automatic retries with full browser headers + rotating User-Agents + exponential backoff on 429/500/502/503/504
+- **Bug-tolerant**: Skips malformed tweets instead of crashing entire requests
+- **Actionable errors**: Every error returns a human-readable message with concrete fix instructions
+- **Rate limiting**: Built-in Reddit rate limiter (7s between requests minimum)
 - **n8n-ready**: Clean JSON responses, designed for HTTP Request nodes and AI agent tools
 
 ## Tech Stack

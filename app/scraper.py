@@ -1,6 +1,8 @@
+import asyncio
 import json
 import os
 import time
+from functools import wraps
 
 from twikit import Client
 from twikit.errors import (
@@ -20,6 +22,8 @@ from twikit.errors import (
 )
 from app.config import TWITTER_USERNAME, TWITTER_EMAIL, TWITTER_PASSWORD, COOKIES_FILE
 
+TWITTER_MAX_RETRIES = 3
+TWITTER_RETRY_BACKOFF = 3.0  # seconds
 
 client = Client("en-US")
 
@@ -64,12 +68,54 @@ def handle_twitter_error(e: Exception) -> ScraperError:
     if isinstance(e, BadRequest):
         return ScraperError(f"Bad request to Twitter: {e}", status_code=400)
     if isinstance(e, RequestTimeout):
-        return ScraperError("Twitter request timed out. Try again.", status_code=504)
+        return ScraperError(
+            "Twitter request timed out. The Twitter browser session may be stale. "
+            "Try refreshing cookies via POST /auth/set-cookies.",
+            status_code=504,
+        )
     if isinstance(e, ServerError):
         return ScraperError("Twitter server error. Try again later.", status_code=502)
     if isinstance(e, TwitterException):
         return ScraperError(f"Twitter API error: {e}", status_code=500)
+    # Catchall for any other exception (including ConnectTimeout which twikit may raise as generic errors)
+    error_msg = str(e)
+    if "timeout" in error_msg.lower() or "connect" in error_msg.lower():
+        return ScraperError(
+            f"Twitter connection issue: {e}. Try refreshing cookies via POST /auth/set-cookies.",
+            status_code=504,
+        )
     return ScraperError(f"Unexpected error: {type(e).__name__}: {e}", status_code=500)
+
+
+def _retry_on_timeout(func):
+    """
+    Decorator that retries twikit async functions up to TWITTER_MAX_RETRIES times
+    on RequestTimeout and connection errors with exponential backoff.
+    """
+    @wraps(func)
+    async def wrapper(*args, **kwargs):
+        last_error = None
+        for attempt in range(TWITTER_MAX_RETRIES):
+            try:
+                return await func(*args, **kwargs)
+            except (RequestTimeout, asyncio.TimeoutError) as e:
+                last_error = e
+                if attempt < TWITTER_MAX_RETRIES - 1:
+                    await asyncio.sleep(TWITTER_RETRY_BACKOFF * (2 ** attempt))
+                    continue
+            except Exception as e:
+                # Only retry on connection-related errors
+                error_str = str(e).lower()
+                if any(k in error_str for k in ["timeout", "connect", "connection", "network"]):
+                    last_error = e
+                    if attempt < TWITTER_MAX_RETRIES - 1:
+                        await asyncio.sleep(TWITTER_RETRY_BACKOFF * (2 ** attempt))
+                        continue
+                # Non-connection error — don't retry, raise immediately
+                raise
+        # All retries exhausted
+        raise handle_twitter_error(last_error)
+    return wrapper
 
 
 async def login():
@@ -104,6 +150,7 @@ async def load_session():
     return False
 
 
+@_retry_on_timeout
 async def check_auth():
     """Check if current cookies are valid by fetching the authenticated user."""
     try:
@@ -121,6 +168,7 @@ async def check_auth():
         raise handle_twitter_error(e)
 
 
+@_retry_on_timeout
 async def get_user(username: str):
     """Get a user's profile info."""
     try:
@@ -141,6 +189,7 @@ async def get_user(username: str):
         raise handle_twitter_error(e)
 
 
+@_retry_on_timeout
 async def get_user_tweets(username: str, count: int = 20):
     """Get recent tweets from a user."""
     try:
@@ -148,15 +197,19 @@ async def get_user_tweets(username: str, count: int = 20):
         tweets = await client.get_user_tweets(user.id, "Tweets", count=count)
         results = []
         for tweet in tweets:
-            results.append({
-                "id": tweet.id,
-                "text": tweet.text,
-                "created_at": tweet.created_at,
-                "favorite_count": tweet.favorite_count,
-                "retweet_count": tweet.retweet_count,
-                "reply_count": tweet.reply_count,
-                "view_count": tweet.view_count,
-            })
+            try:
+                results.append({
+                    "id": tweet.id,
+                    "text": tweet.text,
+                    "created_at": tweet.created_at,
+                    "favorite_count": tweet.favorite_count,
+                    "retweet_count": tweet.retweet_count,
+                    "reply_count": tweet.reply_count,
+                    "view_count": tweet.view_count,
+                })
+            except Exception:
+                # Skip malformed tweets — don't let one bad tweet crash the whole request
+                continue
         return {"username": username, "count": len(results), "tweets": results}
     except Exception as e:
         raise handle_twitter_error(e)
@@ -165,6 +218,7 @@ async def get_user_tweets(username: str, count: int = 20):
 SEARCH_PRODUCTS = ("Top", "Latest", "Media", "Photos", "Videos")
 
 
+@_retry_on_timeout
 async def search_tweets(query: str, count: int = 20, product: str = "Latest"):
     """Search tweets by keyword or hashtag with fallback logic."""
     if product not in SEARCH_PRODUCTS:
@@ -203,6 +257,7 @@ async def search_tweets(query: str, count: int = 20, product: str = "Latest"):
     return {"query": query, "count": len(results), "tweets": results}
 
 
+@_retry_on_timeout
 async def get_trends(category: str = "trending"):
     """Get current trending topics by category."""
     try:
@@ -266,6 +321,7 @@ def _serialize_user(user):
     }
 
 
+@_retry_on_timeout
 async def get_tweet_by_id(tweet_id: str):
     """Get a single tweet by its ID."""
     try:
@@ -275,6 +331,7 @@ async def get_tweet_by_id(tweet_id: str):
         raise handle_twitter_error(e)
 
 
+@_retry_on_timeout
 async def get_tweet_replies(tweet_id: str, count: int = 20):
     """Get replies to a specific tweet."""
     try:
@@ -288,6 +345,7 @@ async def get_tweet_replies(tweet_id: str, count: int = 20):
         raise handle_twitter_error(e)
 
 
+@_retry_on_timeout
 async def search_users(query: str, count: int = 20):
     """Search users by query string."""
     try:
@@ -300,6 +358,7 @@ async def search_users(query: str, count: int = 20):
         raise handle_twitter_error(e)
 
 
+@_retry_on_timeout
 async def get_user_followers(username: str, count: int = 20):
     """Get a user's followers."""
     try:
@@ -313,6 +372,7 @@ async def get_user_followers(username: str, count: int = 20):
         raise handle_twitter_error(e)
 
 
+@_retry_on_timeout
 async def get_user_following(username: str, count: int = 20):
     """Get users that a user is following."""
     try:
@@ -326,6 +386,7 @@ async def get_user_following(username: str, count: int = 20):
         raise handle_twitter_error(e)
 
 
+@_retry_on_timeout
 async def get_user_media(username: str, count: int = 20):
     """Get a user's media tweets."""
     try:
@@ -339,6 +400,7 @@ async def get_user_media(username: str, count: int = 20):
         raise handle_twitter_error(e)
 
 
+@_retry_on_timeout
 async def get_user_likes(username: str, count: int = 20):
     """Get tweets liked by a user."""
     try:
@@ -352,6 +414,7 @@ async def get_user_likes(username: str, count: int = 20):
         raise handle_twitter_error(e)
 
 
+@_retry_on_timeout
 async def get_user_lists(username: str):
     """Get a user's Twitter lists."""
     try:
@@ -372,6 +435,7 @@ async def get_user_lists(username: str):
         raise handle_twitter_error(e)
 
 
+@_retry_on_timeout
 async def get_list_tweets(list_id: str, count: int = 20):
     """Get tweets from a specific Twitter list."""
     try:
