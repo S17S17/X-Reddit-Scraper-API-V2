@@ -25,12 +25,13 @@ from twikit.errors import (
 from app.config import TWITTER_USERNAME, TWITTER_EMAIL, TWITTER_PASSWORD, COOKIES_FILE
 
 # --- twikit 2.3.x cloud environment fix ---
-# In cloud environments (Replit, etc.), twikit's ClientTransaction.init()
-# fails to fetch Twitter's animation page, so KEY_BYTE_INDICES is never set
-# and generate_transaction_id() crashes. We patch 3 things:
-# 1. __init__: set safe defaults immediately
-# 2. async init(): catch failure, always restore safe defaults after
-# 3. generate_transaction_id(): ensure self.key is set, fall back to random
+# In cloud environments, ClientTransaction.init() fails to fetch Twitter's
+# animation page so self.key is never set as an instance attribute.
+# Any code that accesses self.key then raises AttributeError.
+# Fix: make 'key' and 'animation_key' class-level properties with safe
+# defaults so self.key ALWAYS returns something, never AttributeError.
+# Also patch init() to swallow failures and replace generate_transaction_id
+# with a random-value stub so it never crashes.
 _twikit_version = getattr(twikit, '__version__', '0.0.0')
 _twikit_major = int(_twikit_version.split('.')[0])
 _twikit_minor = int(_twikit_version.split('.')[1])
@@ -39,26 +40,23 @@ if _twikit_major == 2 and _twikit_minor >= 3:
     try:
         from twikit.x_client_transaction.transaction import ClientTransaction
 
-        def _set_ct_defaults(ct_instance):
-            """Set all required ClientTransaction attributes to safe defaults."""
-            if not getattr(ct_instance, 'key', None):
-                ct_instance.key = base64.b64encode(b'\x00' * 48).decode()
-            if not hasattr(ct_instance, 'animation_key'):
-                ct_instance.animation_key = ""
-            if not getattr(ClientTransaction, 'KEY_BYTE_INDICES', None):
-                ClientTransaction.KEY_BYTE_INDICES = list(range(16))
+        _DEFAULT_KEY = base64.b64encode(b'\x00' * 48).decode()
 
-        # 1. Patch __init__
-        _original_ct_init = ClientTransaction.__init__
-        def _patched_ct_init(self):
-            try:
-                _original_ct_init(self)
-            except Exception:
-                pass
-            _set_ct_defaults(self)
-        ClientTransaction.__init__ = _patched_ct_init
+        # Make 'key' a property — self.key always returns a value, never AttributeError
+        ClientTransaction.key = property(
+            lambda self: getattr(self, '_ct_key', _DEFAULT_KEY),
+            lambda self, v: setattr(self, '_ct_key', v),
+        )
+        # Make 'animation_key' a property with safe default
+        ClientTransaction.animation_key = property(
+            lambda self: getattr(self, '_ct_animation_key', ''),
+            lambda self, v: setattr(self, '_ct_animation_key', v),
+        )
+        # Ensure DEFAULT_KEY_BYTES_INDICES exists
+        if not getattr(ClientTransaction, 'DEFAULT_KEY_BYTES_INDICES', None):
+            ClientTransaction.DEFAULT_KEY_BYTES_INDICES = list(range(16))
 
-        # 2. Patch async init() — this is where cloud failures happen
+        # Patch async init() — swallow cloud failures silently
         if hasattr(ClientTransaction, 'init'):
             _original_ct_async_init = ClientTransaction.init
             async def _patched_ct_async_init(self, *args, **kwargs):
@@ -66,14 +64,9 @@ if _twikit_major == 2 and _twikit_minor >= 3:
                     await _original_ct_async_init(self, *args, **kwargs)
                 except Exception:
                     pass
-                _set_ct_defaults(self)
             ClientTransaction.init = _patched_ct_async_init
 
-        # 3. Completely replace generate_transaction_id — always return random ID.
-        # Don't try the original at all: it requires KEY_BYTE_INDICES to be
-        # properly initialized from Twitter's animation page, which fails in
-        # cloud environments. Valid cookies (auth_token + ct0) work without
-        # a real transaction ID for most endpoints.
+        # Completely replace generate_transaction_id with a random stub
         ClientTransaction.generate_transaction_id = (
             lambda self, *a, **kw:
                 base64.b64encode(_secrets.token_bytes(32)).decode().rstrip('=')
