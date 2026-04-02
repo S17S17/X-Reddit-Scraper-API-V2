@@ -10,7 +10,7 @@ set -e
 SCRAPER_DIR="$(cd "$(dirname "$0")" && pwd)"
 HERMES_ENV="$SCRAPER_DIR/.env"
 SCRAPER_ENV="$SCRAPER_DIR/.env"
-API_KEY="c7e495f54b09692140c20c1694f5c196ff7e5247826ee514"
+API_KEY="${API_KEY:-change-me}"
 PORT=8765
 LOG_FILE="/tmp/scraper.log"
 

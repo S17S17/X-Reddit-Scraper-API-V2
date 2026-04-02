@@ -280,7 +280,7 @@ async def search_tweets(query: str, count: int = 20, product: str = "Latest"):
 async def get_trends(category: str = "trending"):
     """Get current trending topics by category."""
     try:
-        trends = await client.get_trends(category, retry=False)
+        trends = await client.get_trends(category)
         results = []
         for trend in trends:
             results.append({
@@ -424,7 +424,7 @@ async def get_user_likes(username: str, count: int = 20):
     """Get tweets liked by a user."""
     try:
         user = await client.get_user_by_screen_name(username)
-        tweets = await client.get_user_tweets(user.id, "Likes", count=count)
+        tweets = await client.get_liked_tweets(user.id, count=count)
         results = []
         for tweet in tweets:
             results.append(_serialize_tweet_full(tweet))

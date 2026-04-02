@@ -1,3 +1,4 @@
+import os
 from contextlib import asynccontextmanager
 
 from fastapi import FastAPI, HTTPException, Query, Request, Security
@@ -23,9 +24,16 @@ def verify_api_key(key: str = Security(api_key_header)):
 async def lifespan(app: FastAPI):
     loaded = await scraper.load_session()
     if loaded:
-        print("Session cookies loaded.")
+        print("Session cookies loaded from file.")
     else:
-        print("No saved session. Call POST /auth/login first.")
+        # Auto-inject from environment variables (Replit Secrets / Docker env)
+        auth_token = os.getenv("TWITTER_AUTH_TOKEN", "").strip()
+        ct0 = os.getenv("TWITTER_CT0", "").strip()
+        if auth_token and ct0:
+            scraper.set_cookies(auth_token, ct0)
+            print("Cookies auto-loaded from TWITTER_AUTH_TOKEN / TWITTER_CT0 env vars.")
+        else:
+            print("No saved session. Set TWITTER_AUTH_TOKEN + TWITTER_CT0 env vars, or call POST /auth/set-cookies.")
     yield
 
 
