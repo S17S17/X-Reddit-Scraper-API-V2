@@ -26,19 +26,40 @@ from app.config import TWITTER_USERNAME, TWITTER_EMAIL, TWITTER_PASSWORD, COOKIE
 
 # --- twikit 2.3.x bug fix ---
 # When cookies are loaded but client_transaction.init() hasn't run (or failed),
-# generate_transaction_id() crashes with AttributeError: 'ClientTransaction' has no attribute 'key'.
-# Fix: initialize key and animation_key with safe defaults in __init__.
+# generate_transaction_id() crashes with "Couldn't get KEY_BYTE indices" or
+# AttributeError: 'ClientTransaction' has no attribute 'key'.
+# Fix: initialize safe defaults in __init__ AND patch generate_transaction_id
+# to fall back to a random value instead of crashing.
 _twikit_version = getattr(twikit, '__version__', '0.0.0')
 _twikit_major = int(_twikit_version.split('.')[0])
 _twikit_minor = int(_twikit_version.split('.')[1])
-if _twikit_major == 2 and _twikit_minor == 3:
+if _twikit_major == 2 and _twikit_minor >= 3:
+    import secrets as _secrets
     from twikit.x_client_transaction.transaction import ClientTransaction
     _original_ct_init = ClientTransaction.__init__
     def _patched_ct_init(self):
-        _original_ct_init(self)
-        self.key = base64.b64encode(b'\x00' * 48).decode()
-        self.animation_key = ""
+        try:
+            _original_ct_init(self)
+        except Exception:
+            pass
+        if not getattr(self, 'key', None):
+            self.key = base64.b64encode(b'\x00' * 48).decode()
+        if not hasattr(self, 'animation_key'):
+            self.animation_key = ""
+        # KEY_BYTE_INDICES is a class attribute set after animation parsing;
+        # if it's missing the transaction ID generation will crash.
+        if not getattr(ClientTransaction, 'KEY_BYTE_INDICES', None):
+            ClientTransaction.KEY_BYTE_INDICES = list(range(16))
     ClientTransaction.__init__ = _patched_ct_init
+
+    # Patch generate_transaction_id: try the real method, fall back to random.
+    _original_gen_tx = ClientTransaction.generate_transaction_id
+    def _patched_gen_tx(self, *args, **kwargs):
+        try:
+            return _original_gen_tx(self, *args, **kwargs)
+        except Exception:
+            return base64.b64encode(_secrets.token_bytes(32)).decode().rstrip('=')
+    ClientTransaction.generate_transaction_id = _patched_gen_tx
 # --------------------------------
 
 TWITTER_MAX_RETRIES = 3
