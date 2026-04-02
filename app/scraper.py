@@ -24,42 +24,64 @@ from twikit.errors import (
 )
 from app.config import TWITTER_USERNAME, TWITTER_EMAIL, TWITTER_PASSWORD, COOKIES_FILE
 
-# --- twikit 2.3.x bug fix ---
-# When cookies are loaded but client_transaction.init() hasn't run (or failed),
-# generate_transaction_id() crashes with "Couldn't get KEY_BYTE indices" or
-# AttributeError: 'ClientTransaction' has no attribute 'key'.
-# Fix: initialize safe defaults in __init__ AND patch generate_transaction_id
-# to fall back to a random value instead of crashing.
+# --- twikit 2.3.x cloud environment fix ---
+# In cloud environments (Replit, etc.), twikit's ClientTransaction.init()
+# fails to fetch Twitter's animation page, so KEY_BYTE_INDICES is never set
+# and generate_transaction_id() crashes. We patch 3 things:
+# 1. __init__: set safe defaults immediately
+# 2. async init(): catch failure, always restore safe defaults after
+# 3. generate_transaction_id(): ensure self.key is set, fall back to random
 _twikit_version = getattr(twikit, '__version__', '0.0.0')
 _twikit_major = int(_twikit_version.split('.')[0])
 _twikit_minor = int(_twikit_version.split('.')[1])
 if _twikit_major == 2 and _twikit_minor >= 3:
     import secrets as _secrets
-    from twikit.x_client_transaction.transaction import ClientTransaction
-    _original_ct_init = ClientTransaction.__init__
-    def _patched_ct_init(self):
-        try:
-            _original_ct_init(self)
-        except Exception:
-            pass
-        if not getattr(self, 'key', None):
-            self.key = base64.b64encode(b'\x00' * 48).decode()
-        if not hasattr(self, 'animation_key'):
-            self.animation_key = ""
-        # KEY_BYTE_INDICES is a class attribute set after animation parsing;
-        # if it's missing the transaction ID generation will crash.
-        if not getattr(ClientTransaction, 'KEY_BYTE_INDICES', None):
-            ClientTransaction.KEY_BYTE_INDICES = list(range(16))
-    ClientTransaction.__init__ = _patched_ct_init
+    try:
+        from twikit.x_client_transaction.transaction import ClientTransaction
 
-    # Patch generate_transaction_id: try the real method, fall back to random.
-    _original_gen_tx = ClientTransaction.generate_transaction_id
-    def _patched_gen_tx(self, *args, **kwargs):
-        try:
-            return _original_gen_tx(self, *args, **kwargs)
-        except Exception:
-            return base64.b64encode(_secrets.token_bytes(32)).decode().rstrip('=')
-    ClientTransaction.generate_transaction_id = _patched_gen_tx
+        def _set_ct_defaults(ct_instance):
+            """Set all required ClientTransaction attributes to safe defaults."""
+            if not getattr(ct_instance, 'key', None):
+                ct_instance.key = base64.b64encode(b'\x00' * 48).decode()
+            if not hasattr(ct_instance, 'animation_key'):
+                ct_instance.animation_key = ""
+            if not getattr(ClientTransaction, 'KEY_BYTE_INDICES', None):
+                ClientTransaction.KEY_BYTE_INDICES = list(range(16))
+
+        # 1. Patch __init__
+        _original_ct_init = ClientTransaction.__init__
+        def _patched_ct_init(self):
+            try:
+                _original_ct_init(self)
+            except Exception:
+                pass
+            _set_ct_defaults(self)
+        ClientTransaction.__init__ = _patched_ct_init
+
+        # 2. Patch async init() — this is where cloud failures happen
+        if hasattr(ClientTransaction, 'init'):
+            _original_ct_async_init = ClientTransaction.init
+            async def _patched_ct_async_init(self, *args, **kwargs):
+                try:
+                    await _original_ct_async_init(self, *args, **kwargs)
+                except Exception:
+                    pass
+                _set_ct_defaults(self)
+            ClientTransaction.init = _patched_ct_async_init
+
+        # 3. Patch generate_transaction_id — last line of defence
+        if hasattr(ClientTransaction, 'generate_transaction_id'):
+            _original_gen_tx = ClientTransaction.generate_transaction_id
+            def _patched_gen_tx(self, *args, **kwargs):
+                _set_ct_defaults(self)
+                try:
+                    return _original_gen_tx(self, *args, **kwargs)
+                except Exception:
+                    return base64.b64encode(_secrets.token_bytes(32)).decode().rstrip('=')
+            ClientTransaction.generate_transaction_id = _patched_gen_tx
+
+    except ImportError:
+        pass  # twikit version doesn't use ClientTransaction
 # --------------------------------
 
 TWITTER_MAX_RETRIES = 3
