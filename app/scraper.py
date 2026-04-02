@@ -69,16 +69,15 @@ if _twikit_major == 2 and _twikit_minor >= 3:
                 _set_ct_defaults(self)
             ClientTransaction.init = _patched_ct_async_init
 
-        # 3. Patch generate_transaction_id — last line of defence
-        if hasattr(ClientTransaction, 'generate_transaction_id'):
-            _original_gen_tx = ClientTransaction.generate_transaction_id
-            def _patched_gen_tx(self, *args, **kwargs):
-                _set_ct_defaults(self)
-                try:
-                    return _original_gen_tx(self, *args, **kwargs)
-                except Exception:
-                    return base64.b64encode(_secrets.token_bytes(32)).decode().rstrip('=')
-            ClientTransaction.generate_transaction_id = _patched_gen_tx
+        # 3. Completely replace generate_transaction_id — always return random ID.
+        # Don't try the original at all: it requires KEY_BYTE_INDICES to be
+        # properly initialized from Twitter's animation page, which fails in
+        # cloud environments. Valid cookies (auth_token + ct0) work without
+        # a real transaction ID for most endpoints.
+        ClientTransaction.generate_transaction_id = (
+            lambda self, *a, **kw:
+                base64.b64encode(_secrets.token_bytes(32)).decode().rstrip('=')
+        )
 
     except ImportError:
         pass  # twikit version doesn't use ClientTransaction
