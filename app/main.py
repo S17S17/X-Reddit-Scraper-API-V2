@@ -75,6 +75,12 @@ class CookiesInput(BaseModel):
 # --- Health & Auth ---
 
 
+@app.get("/")
+async def root():
+    """Root endpoint for Replit deployment health check."""
+    return {"status": "ok", "version": "3.1.0", "endpoints": 22}
+
+
 @app.get("/health")
 async def health():
     """Basic health check. No auth required."""
