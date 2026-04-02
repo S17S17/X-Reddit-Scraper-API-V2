@@ -1,6 +1,7 @@
 import asyncio
 import random
 import time
+from typing import Optional
 from urllib.parse import quote_plus
 
 import httpx
@@ -49,7 +50,7 @@ def _build_headers() -> dict:
     }
 
 
-async def _rate_limited_get_with_retry(url: str, params: dict | None = None) -> dict:
+async def _rate_limited_get_with_retry(url: str, params: Optional[dict] = None) -> dict:
     """
     Make a rate-limited, retried GET request to Reddit's .json endpoints.
     Retries on 429, 500, 502, 503, 504 with exponential backoff.
@@ -138,7 +139,7 @@ async def _rate_limited_get_with_retry(url: str, params: dict | None = None) -> 
 
 
 # Alias for backward compatibility
-async def _rate_limited_get(url: str, params: dict | None = None) -> dict:
+async def _rate_limited_get(url: str, params: Optional[dict] = None) -> dict:
     return await _rate_limited_get_with_retry(url, params)
 
 

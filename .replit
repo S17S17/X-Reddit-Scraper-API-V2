@@ -1,7 +1,8 @@
-run = "uvicorn app.main:app --host 0.0.0.0 --port 8080"
+run = "pip install -r requirements.txt && python -m uvicorn app.main:app --host 0.0.0.0 --port 8080"
 language = "python3"
 entrypoint = "app/main.py"
 
 [deployment]
-run = ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8080"]
+build = ["sh", "-c", "pip install -r requirements.txt"]
+run = ["python", "-m", "uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8080"]
 deploymentTarget = "autoscale"
