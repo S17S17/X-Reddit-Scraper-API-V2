@@ -4,6 +4,8 @@ import os
 import time
 from functools import wraps
 
+import base64
+import twikit
 from twikit import Client
 from twikit.errors import (
     TwitterException,
@@ -21,6 +23,23 @@ from twikit.errors import (
     TweetNotAvailable,
 )
 from app.config import TWITTER_USERNAME, TWITTER_EMAIL, TWITTER_PASSWORD, COOKIES_FILE
+
+# --- twikit 2.3.x bug fix ---
+# When cookies are loaded but client_transaction.init() hasn't run (or failed),
+# generate_transaction_id() crashes with AttributeError: 'ClientTransaction' has no attribute 'key'.
+# Fix: initialize key and animation_key with safe defaults in __init__.
+_twikit_version = getattr(twikit, '__version__', '0.0.0')
+_twikit_major = int(_twikit_version.split('.')[0])
+_twikit_minor = int(_twikit_version.split('.')[1])
+if _twikit_major == 2 and _twikit_minor == 3:
+    from twikit.x_client_transaction.transaction import ClientTransaction
+    _original_ct_init = ClientTransaction.__init__
+    def _patched_ct_init(self):
+        _original_ct_init(self)
+        self.key = base64.b64encode(b'\x00' * 48).decode()
+        self.animation_key = ""
+    ClientTransaction.__init__ = _patched_ct_init
+# --------------------------------
 
 TWITTER_MAX_RETRIES = 3
 TWITTER_RETRY_BACKOFF = 3.0  # seconds
