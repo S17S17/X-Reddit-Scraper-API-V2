@@ -6,6 +6,25 @@
 [![Railway](https://img.shields.io/badge/Deploy-Railway-blueviolet)](https://railway.app)
 [![n8n Compatible](https://img.shields.io/badge/n8n-Compatible-orange)](https://n8n.io)
 
+---
+
+## 🚀 Pro Setup Service — $99 / $199
+
+**Can't self-host? Want it done for you?**
+
+I set up your complete X-Reddit Scraper system — Railway deployment, Twitter auth, n8n workflows, Arabic guide, MCP server. Delivered in 24 hours.
+
+| Package | Price | What's Included |
+|---------|-------|----------------|
+| Basic | **$99** | Railway instance + n8n workflows + Arabic walkthrough |
+| Pro | **$199** | Everything + 3 extra templates + MCP server + Priority support |
+
+👉 **[DM @Semah____](https://twitter.com/Semah____)** to purchase
+
+*(Free self-host version — see guide below)*
+
+---
+
 ⭐ **Star this repo if it saves you time!**
 
 A free, self-hosted REST API that scrapes **Twitter/X** and **Reddit** data. Built with FastAPI, designed for automation workflows (n8n, Make, Zapier) and AI agent pipelines.
@@ -14,10 +33,10 @@ A free, self-hosted REST API that scrapes **Twitter/X** and **Reddit** data. Bui
 
 ## What You Can Build
 
-- 🤖 **AI Agent Tools** - Turn all 22 endpoints into MCP tools for Claude/ChatGPT
+- 🤺 **AI Agent Tools** - Turn all 22 endpoints into MCP tools for Claude/ChatGPT
 - 📊 **Daily Intelligence Feeds** - Auto-scrape Twitter + Reddit into Airtable
 - 📈 **Trend Monitors** - Track keywords and get Slack alerts
-- 🧵 **Thread Generators** - Find trending topics → write threads automatically
+- 🤖 **Thread Generators** - Find trending topics → write threads automatically
 - 🔍 **Competitor Spies** - Monitor accounts and hashtags in real-time
 
 ## Features
@@ -210,20 +229,17 @@ https://YOUR-ID.ngrok-free.app -> http://localhost:8000
 **Step 3 — Use the ngrok URL in n8n**
 
 Replace your Railway URL with the ngrok URL in all HTTP Request nodes:
-
 ```
 https://YOUR-ID.ngrok-free.app/search/tweets?query=AI&count=15
 ```
 
 **Step 4 — Handle the changing URL**
 
-Free ngrok generates a new URL every restart. To avoid updating every n8n node each time:
+Free ngrok generates a new URL every restart. To avoid updating every n8n node:
 
 1. Create a **Global Variable** in n8n called `SCRAPER_URL`
 2. Set its value to your current ngrok URL
 3. Reference it in all nodes as `{{ $vars.SCRAPER_URL }}/search/tweets?...`
-
-Now when ngrok restarts, you only update one place.
 
 ### Troubleshooting
 
@@ -255,50 +271,31 @@ Authentication: Predefined Credential Type > Header Auth > Scraper API Key
 ```
 
 See the included guide docs for detailed n8n configurations:
-- [API-ENDPOINTS-GUIDE.md](API-ENDPOINTS-GUIDE.md) — Complete guide for all 22 endpoints with visual URL breakdowns and step-by-step instructions
-- [n8n-http-request-guide.md](n8n-http-request-guide.md) — Quick reference for HTTP Request nodes in n8n workflows
+- [API-ENDPOINTS-GUIDE.md](API-ENDPOINTS-GUIDE.md) — Complete guide for all 22 endpoints
+- [n8n-http-request-guide.md](n8n-http-request-guide.md) — Quick reference for HTTP Request nodes
 
 ### Ready-to-Import Workflows
 
-Download these from the [/workflows](workflows/) folder and import directly into n8n:
+Download from the [/workflows](workflows/) folder:
 
 | Workflow | Description |
 |---|---|
-| [Daily AI Intelligence Feed](workflows/Daily_AI_Intelligence_Feed.json) | Scrapes Twitter + Reddit + HN + Google News every morning into Airtable |
-| [Twitter & Reddit MCP Server](workflows/Twitter%20%26%20Reddit%20Scraper%20MCP%20%28tuto%29.json) | Turns all 22 endpoints into AI agent tools for Claude/ChatGPT |
-
-## Project Structure
-
-```
-app/
-  __init__.py       # Package marker
-  main.py           # FastAPI app, all routes, API key auth, error handlers
-  scraper.py        # Twitter scraper wrapping twikit
-  reddit.py         # Reddit scraper using httpx + .json endpoints
-  config.py         # Environment variable loading
-workflows/
-  Daily_AI_Intelligence_Feed.json
-  Twitter & Reddit Scraper MCP (tuto).json
-requirements.txt    # Python dependencies
-Procfile            # Railway deployment command
-runtime.txt         # Python version for Railway
-.env.example        # Environment variable template
-```
+| [Daily AI Intelligence Feed](workflows/Daily_AI_Intelligence_Feed.json) | Scrapes Twitter + Reddit + HN every morning into Airtable |
+| [Twitter & Reddit MCP Server](workflows/Twitter%20%26%20Reddit%20Scraper%20MCP%20%28tuto%29.json) | Turns all 22 endpoints into AI agent tools |
 
 ## Security Notes
 
 - **API key auth**: Every endpoint (except `/health` and `/endpoints`) requires the `X-API-Key` header
 - **No credentials in code**: All secrets live in environment variables
 - **Cookie-based Twitter auth**: Uses your own browser session — no Twitter API developer account needed
-- **Reddit is public**: Uses Reddit's public `.json` endpoints with a User-Agent header — no Reddit API registration
-- **Rate limiting**: Reddit requests are rate-limited to ~10/min internally to avoid 429 errors
+- **Reddit is public**: Uses Reddit's public `.json` endpoints with a User-Agent header
+- **Rate limiting**: Reddit requests are rate-limited to ~10/min internally
 
 ### Important
 
 - **Change your API key** from the default. Use a strong, random string.
 - **Never commit `.env` or `cookies.json`** — they're in `.gitignore` by default.
 - **Twitter cookies expire** — re-extract from your browser periodically.
-- **This is for personal/educational use.** Respect Twitter and Reddit's terms of service.
 
 ## Known Limitations
 
@@ -307,38 +304,20 @@ runtime.txt         # Python version for Railway
 | Cloudflare blocks Twitter login | Use `/auth/set-cookies` with browser cookies |
 | Railway resets filesystem on deploy | Re-inject cookies after each deploy |
 | `/trends` may return empty | Twitter limitation with cookie-only auth |
-| Reddit selftext truncated at 2000 chars | By design, to keep responses manageable |
 | Twitter blocked on cloud IPs | Use Local + ngrok setup |
 
 ## License
 
 [MIT](LICENSE)
 
-## Contributing
+---
 
-Pull requests are welcome! Areas where contributions would be especially valuable:
+## Get Support & Setup Services
 
-- Additional Reddit endpoints (user profiles, comment threads)
-- Twitter Spaces support
-- Rate limiting improvements
-- Error handling enhancements
-- Additional n8n workflow examples
-
-**How to contribute:**
-
-1. Fork the repo
-2. Create a feature branch (`git checkout -b feature/new-endpoint`)
-3. Commit your changes
-4. Push to the branch (`git push origin feature/new-endpoint`)
-5. Open a Pull Request
-
-## Get Support & Exclusive Workflows
-
-- 💬 [Join Agentic AI Society](https://skool.com/eye-on-ai-9025) for premium workflows and automation deep dives
+- 🔧 **Pro Setup Service**: [DM @Semah____](https://twitter.com/Semah____) — Basic ($99) / Pro ($199)
+- 💬 [Join Agentic AI Society](https://skool.com/eye-on-ai-9025) for premium workflows
 - 🐦 Follow [@Semah____](https://twitter.com/Semah____) for AI automation tips
 - ⭐ Star this repo to support the project
 - 🐛 Report issues on [GitHub Issues](https://github.com/S17S17/twitter-scraper-api/issues)
-
----
 
 **Built by [Semah AI](https://skool.com/eye-on-ai-9025)** — Automating the future, one API at a time.
